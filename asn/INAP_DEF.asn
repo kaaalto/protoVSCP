@@ -1,0 +1,85 @@
+INAP DEFINITIONS IMPLICIT TAGS ::= BEGIN
+
+Cause 	 	 	::= OCTET STRING (SIZE (minCauseLength .. maxCauseLength))
+
+--  Indicates the cause for interface related information. Refer to the ETS 300 356-1 [8]
+--  Cause parameter for encoding. For the use of Cause and Location values refer to Q.850.
+
+
+ServiceKey 	::= Integer4
+
+--  Information that allows the SCF to choose the appropriate service logic.
+
+CalledPartyNumber 	::= OCTET STRING (SIZE (minCalledPartyNumberLength ..  	maxCalledPartyNumberLength))
+
+--  Indicates the Called Party Number. Refer to ETS 300 356-1 [8] for encoding.
+
+CallingPartyNumber 	::= OCTET STRING (SIZE (minCallingPartyNumberLength ..  	maxCallingPartyNumberLength))
+
+--  Indicates the Calling Party Number. Refer to ETS 300 356-1 [8] for encoding.
+
+CutAndPaste 	 	::= INTEGER (0..22)
+
+--  Indicates the number of digits to be deleted. Refer to ITU-T Recommendation Q.1214 [11],
+--  § 6.4.2.16, for additional information.
+
+DestinationRoutingAddress 	::= SEQUENCE SIZE (1) OF CalledPartyNumber
+
+
+ConnectArg 	::= SEQUENCE {
+ 	destinationRoutingAddress 	[0] DestinationRoutingAddress,
+-- 	alertingPattern 	[1] AlertingPattern 	OPTIONAL,
+-- 	correlationID 	[2] CorrelationID 	OPTIONAL,
+ 	cutAndPaste 	[3] CutAndPaste 	OPTIONAL,
+-- 	originalCalledPartyID 	[6] OriginalCalledPartyID 	OPTIONAL,
+-- 	routeList 	[7] RouteList 	OPTIONAL,
+-- 	scfID 	[8] ScfID 	OPTIONAL,
+-- 	extensions 	[10] SEQUENCE SIZE(1..numOfExtensions) OF ExtensionField 	OPTIONAL,
+-- 	serviceInteractionIndicators 	[26] ServiceInteractionIndicators 	OPTIONAL,
+ 	callingPartyNumber 	[27] CallingPartyNumber 	OPTIONAL,
+-- 	callingPartysCategory 	[28] CallingPartysCategory 	OPTIONAL,
+-- 	redirectingPartyID 	[29] RedirectingPartyID 	OPTIONAL,
+-- 	redirectionInformation 	[30] RedirectionInformation 	OPTIONAL
+  ...
+ 	}
+
+InitialDPArg 	::= SEQUENCE {
+ 	serviceKey 	[0] ServiceKey,
+ 	calledPartyNumber 	[2] CalledPartyNumber 	OPTIONAL,
+ 	callingPartyNumber 	[3] CallingPartyNumber 	OPTIONAL,
+-- 	callingPartysCategory 	[5] CallingPartysCategory 	OPTIONAL,
+-- 	cGEncountered 	[7] CGEncountered 	OPTIONAL,
+-- 	iPSSPCapabilities 	[8] IPSSPCapabilities 	OPTIONAL,
+-- 	iPAvailable 	[9] IPAvailable 	OPTIONAL,
+-- 	locationNumber 	[10] LocationNumber 	OPTIONAL,
+-- 	originalCalledPartyID 	[12] OriginalCalledPartyID 	OPTIONAL,
+-- 	extensions 	[15] SEQUENCE SIZE(1..numOfExtensions) OF ExtensionField 	OPTIONAL,
+-- 	highLayerCompatibility 	[23] HighLayerCompatibility 	OPTIONAL,
+-- 	serviceInteractionIndicators 	[24] ServiceInteractionIndicators 	OPTIONAL,
+--	additionalCallingPartyNumber 	[25] AdditionalCallingPartyNumber 	OPTIONAL,
+-- 	forwardCallIndicators 	[26] ForwardCallIndicators 	OPTIONAL,
+-- 	bearerCapability 	[27] BearerCapability 	OPTIONAL,
+-- 	eventTypeBCSM 	[28] EventTypeBCSM 	OPTIONAL,
+-- 	redirectingPartyID 	[29] RedirectingPartyID 	OPTIONAL,
+-- 	redirectionInformation 	[30] RedirectionInformation 	OPTIONAL
+  ...
+ 	}
+
+ReleaseCallArg 	::= Cause
+
+--  A default value of decimal 31 (normal unspecified) should be coded appropriately.
+
+
+--  Definition of range constants
+minCalledPartyNumberLength 	INTEGER ::= 1 -- network specific
+maxCalledPartyNumberLength 	INTEGER ::= 20  -- network specific
+minCallingPartyNumberLength 	INTEGER ::= 1 -- network specific
+maxCallingPartyNumberLength 	INTEGER ::= 20  -- network specific
+minCauseLength 	INTEGER ::= 2
+maxCauseLength 	INTEGER ::= 20 -- network specific
+Integer4 	::= INTEGER (0..2147483647)
+
+-------------------------------------------------------------------------------------------------
+
+END
+
