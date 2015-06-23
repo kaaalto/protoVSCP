@@ -15,6 +15,12 @@ public:
 
 	int decodeInitialDP(const ByteStream &);
 
+//    friend ostream &operator<<( ostream &output, const InapMessage &i )
+//    {
+//       output ;
+//       return output;
+//    }
+
 };
 
 #endif /* INAPMESSAGE_HPP_ */

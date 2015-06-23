@@ -14,8 +14,6 @@ class M3UAmessage
 {
 public:
 
-
-
 	enum M3UAMessages {
 		UNKNOWN,
 		MGMT_NTFY,

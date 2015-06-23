@@ -34,6 +34,8 @@ public:
     int transactionId() const { return m_transactionId; }
     int invokeId() const { return m_invokeId; }
     ByteStream parameterData() const;
+
+
 private:
     int m_operationLocalCode;
     int m_transactionId;

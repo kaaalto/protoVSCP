@@ -20,6 +20,7 @@ InapMessage::InapMessage(int _localCode, const ByteStream &_incoming)
 {
 		LOG("INAP message - " << _incoming.size() );
 		LOG(" " << _incoming);
+		LOG("INAP localCode: " << _localCode);
 
 		switch(_localCode)
 		{

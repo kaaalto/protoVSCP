@@ -220,35 +220,6 @@ int M3UAmessage::aspACTIVE(const SctpConnection &_scptConn)
 	msg.push_back(0x02);	// Loadshare
 
 
-	 /*
-   Routing Context: n X 32-bit integers
-
-      The optional Routing Context parameter contains (a list of)
-      integers indexing the Application Server traffic that the sending
-      ASP is configured/registered to receive.
-
-      There is a one-to-one relationship between an index entry and an
-      SGP Routing Key or AS Name.  Because an AS can only appear in one
-      Network Appearance, the Network Appearance parameter is not
-      required in the ASP Active message.
-
-      An Application Server Process may be configured to process traffic
-      for more than one logical Application Server.  From the
-      perspective of an ASP, a Routing Context defines a range of
-      signalling traffic that the ASP is currently configured to receive
-      from the SGP.  For example, an ASP could be configured to support
-      signalling for multiple MTP3-Users, identified by separate SS7
-      DPC/OPC/SI ranges.
-
-   The format and description of the optional INFO String parameter are
-   the same as for the DUNA message (see Section 3.4.1).
- *
- */
-	msg.push_back(0x00);
-	msg.push_back(0x00);
-	msg.push_back(0x00);
-	msg.push_back(0x02);	// Routing key 2
-
 	tlvLength = 8;
 
 	ByteStream bsHeader = commonHeader(0x04, 0x01, tlvLength);	// ASPTM, ASPAC

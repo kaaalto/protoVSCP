@@ -33,7 +33,7 @@ int main (int argc, char *argv[])
 
 	LOG("ASP UP sent");
 
-	LOG("sending ASP ACTIVE");
+
 	m3uamsg.aspACTIVE(sc);
 
 
@@ -63,7 +63,7 @@ int main (int argc, char *argv[])
     		M3UAmessage incomingM3uaMsg;
     		if (incomingM3uaMsg.valid() == false)
     		{
-    			LOG("incomingM3uaMsg NOT valid");
+    			LOG("incomingM3uaMsg is of UNKNOWN TYPE");
     			continue;
     		}
 
