@@ -2,6 +2,9 @@
 
 #include "SctpConnection.hpp"
 #include "M3UAmessage.hpp"
+#include "TcapMessage.hpp"
+
+#include "TCMessage.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -29,6 +32,10 @@ int main (int argc, char *argv[])
     m3uamsg.aspUP(sc);
 
 	LOG("ASP UP sent");
+
+	LOG("sending ASP ACTIVE");
+	m3uamsg.aspACTIVE(sc);
+
 
     fd_set rfds;
     int retval;

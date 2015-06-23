@@ -5,9 +5,9 @@
 #include "InapMessage.hpp"
 
 
-#include <ConnectArg.h>
-#include <InitialDPArg.h>
-#include <ReleaseCallArg.h>
+#include "ConnectArg.h"
+#include "InitialDPArg.h"
+#include "ReleaseCallArg.h"
 
 #include <iostream>
 
@@ -71,10 +71,6 @@ int InapMessage::decodeInitialDP(const ByteStream &_msg)
     } else {
     	LOG("InitialDPArg decoding successful");
     }
-
-
-
-
 
 
 

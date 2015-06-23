@@ -23,11 +23,11 @@
 
 #include "TcapMessage.hpp"
 
-
 #include "ExternalPDU.h"
-#include "DialoguePDU.h"
+//#include "DialoguePDU.h"
 #include "TCMessage.h"
 #include "ReturnResult.h"
+#include "constr_TYPE.h"
 
 #include <iostream>
 
@@ -36,8 +36,7 @@
 
 //static const int tcap_id_as_dialogue[] = { 0, 0, 17, 773, 1, 1, 1 };
 static uint8_t _dial_version1 = 0x80;
-static BIT_STRING_t dial_version1 = { &_dial_version1, 1, 7 };
-
+//static BIT_STRING_t dial_version1 = { &_dial_version1, 1, 7 };
 
 
 static int
@@ -146,9 +145,9 @@ TcapMessage::TcapMessage(ByteStream _incoming) :
                 if (component->choice.invoke.opCode.present == OPERATION_PR_localValue)
                 {
                     std::cout << "   opcode (localValue): "
-                              << (int) component->choice.invoke.opCode.choice.localValue.buf[0] << "\n";
+                              << (long) component->choice.invoke.opCode.choice.localValue << "\n";
 
-                    m_operationLocalCode = component->choice.invoke.opCode.choice.localValue.buf[0];
+                    m_operationLocalCode = component->choice.invoke.opCode.choice.localValue;
                 }
 
                 if (m_operationLocalCode && component->choice.invoke.parameter)
@@ -164,14 +163,14 @@ TcapMessage::TcapMessage(ByteStream _incoming) :
                 break;
             }
             default:
-                std::cout << "TCAP/BEGIN/uknown comp: "
+                std::cout << "TCAP/BEGIN/unknown comp: "
                           << component->present << "\n";
                 break;
             }
             break;
         }
         default:
-            std::cout << "TCAP/unkown prim: "
+            std::cout << "TCAP/unknown prim: "
                       << msg->present << "\n";
             break;
         }
@@ -227,54 +226,54 @@ ByteStream TcapMessage::end(int _invokeId,
     // build ExternalPDU, DialoguePDU and AARQ apdu
     ANY_t* anyAdapter = (ANY_t*) calloc(1, sizeof(ANY_t));
     ExternalPDU_t* externalPDU = (ExternalPDU_t*) calloc(1,sizeof(ExternalPDU_t));
-    DialoguePDU_t* dialoguePDU = (DialoguePDU_t*) calloc(1,sizeof(DialoguePDU_t));
-    AARE_apdu_t* aare = (AARE_apdu_t*) calloc(1,sizeof(AARE_apdu_t));
-
-/*
-    // shortMsgMO-RelayContext-v3
-    const uint8_t map_as_dialogue[] = { 0, 4, 0, 0, 1, 0, 21, 3 };
-
-    // shortMsgMT-RelayContext-v3
-    //const uint8_t map_as_dialogue[] = { 0, 4, 0, 0, 1, 0, 25, 3 };
-
-    OBJECT_IDENTIFIER_set_arcs( &aare->application_context_name, map_as_dialogue,
-                               sizeof(map_as_dialogue[0]), 8);
-
-    OBJECT_IDENTIFIER_set_arcs(&externalPDU->oid,
-                       &tcap_id_as_dialogue,
-                       sizeof(tcap_id_as_dialogue[0]),
-             sizeof(tcap_id_as_dialogue)/sizeof(tcap_id_as_dialogue[0]));
-
-    aare->protocol_version =  &dial_version1;
-    aare->user_information = 0;
+//    DialoguePDU_t* dialoguePDU = (DialoguePDU_t*) calloc(1,sizeof(DialoguePDU_t));
+//    AARE_apdu_t* aare = (AARE_apdu_t*) calloc(1,sizeof(AARE_apdu_t));
 
 
+//    // shortMsgMO-RelayContext-v3
+//    const uint8_t map_as_dialogue[] = { 0, 4, 0, 0, 1, 0, 21, 3 };
+//
+//    // shortMsgMT-RelayContext-v3
+//    //const uint8_t map_as_dialogue[] = { 0, 4, 0, 0, 1, 0, 25, 3 };
+//
+//    OBJECT_IDENTIFIER_set_arcs( &aare->application_context_name, map_as_dialogue,
+//                               sizeof(map_as_dialogue[0]), 8);
+//
+//    OBJECT_IDENTIFIER_set_arcs(&externalPDU->oid,
+//                       &tcap_id_as_dialogue,
+//                       sizeof(tcap_id_as_dialogue[0]),
+//             sizeof(tcap_id_as_dialogue)/sizeof(tcap_id_as_dialogue[0]));
+//
+//    aare->protocol_version =  &dial_version1;
+//    aare->user_information = 0;
+//
+//
+//
+//    INTEGER_t* intT1 = (INTEGER_t*) calloc(1,sizeof(INTEGER_t));
+//    int rc = asn_long2INTEGER(intT1, Associate_result_accepted);
+//    if (rc != 0)
+//        throw("can't convert long to INTEGER");
+//
+//    aare->result = *intT1; // int?
+//
+//
+//    INTEGER_t* intT2 = (INTEGER_t*) calloc(1,sizeof(INTEGER_t));
+//    rc = asn_long2INTEGER(intT2, 0);
+//    if (rc != 0)
+//        throw("can't convert long to INTEGER");
+//
+//    aare->result_source_diagnostic.present = Associate_source_diagnostic_PR_dialogue_service_user;
+//    aare->result_source_diagnostic.choice.dialogue_service_user = *intT2;
+//
+//    dialoguePDU->present = DialoguePDU_PR_dialogueResponse; // AARE
+//    dialoguePDU->choice.dialogueResponse = *aare;
+//
+//
+//    ANY_fromType((ANY_t *) &externalPDU->dialog, &asn_DEF_DialoguePDU, dialoguePDU);
+//    ANY_fromType(anyAdapter, &asn_DEF_ExternalPDU, externalPDU);
+//
+//    tcMsg->choice.end.dialoguePortion = (OCTET_STRING_t*) anyAdapter;
 
-    INTEGER_t* intT1 = (INTEGER_t*) calloc(1,sizeof(INTEGER_t));
-    int rc = asn_long2INTEGER(intT1, Associate_result_accepted);
-    if (rc != 0)
-        throw("can't convert long to INTEGER");
-
-    aare->result = *intT1; // int?
-
-
-    INTEGER_t* intT2 = (INTEGER_t*) calloc(1,sizeof(INTEGER_t));
-    rc = asn_long2INTEGER(intT2, 0);
-    if (rc != 0)
-        throw("can't convert long to INTEGER");
-
-    aare->result_source_diagnostic.present = Associate_source_diagnostic_PR_dialogue_service_user;
-    aare->result_source_diagnostic.choice.dialogue_service_user = *intT2;
-
-    dialoguePDU->present = DialoguePDU_PR_dialogueResponse; // AARE
-    dialoguePDU->choice.dialogueResponse = *aare;
-
-
-    ANY_fromType((ANY_t *) &externalPDU->dialog, &asn_DEF_DialoguePDU, dialoguePDU);
-    ANY_fromType(anyAdapter, &asn_DEF_ExternalPDU, externalPDU);
-
-    tcMsg->choice.end.dialoguePortion = (OCTET_STRING_t*) anyAdapter;
- */
 
     // component return result last
     Component_t* component;
@@ -283,19 +282,19 @@ ByteStream TcapMessage::end(int _invokeId,
     component->choice.returnResultLast.invokeID = _invokeId;
 
 
-    INTEGER_t* intT = (INTEGER_t*) calloc(1,sizeof(INTEGER_t));
-    rc = asn_long2INTEGER(intT, 46); // 46= moForward, 44=mtForward TODO get from inco
+//    INTEGER_t* intT = (INTEGER_t*) calloc(1,sizeof(INTEGER_t));
+//    int rc = asn_long2INTEGER(intT, 46); // 46= moForward, 44=mtForward TODO get from inco
 									//////////////////////////////////////////////////////////
 									/////////////// 0 = initialDP, 20 = connect
-    if (rc != 0)
-        throw("can't convert long to INTEGER");
+//    if (rc != 0)
+//        throw("can't convert long to INTEGER");
+
+    long intT = 20;
 
     component->choice.returnResultLast.resultretres = (struct ReturnResult::resultretres*) calloc(1,sizeof(struct ReturnResult::resultretres*));
 
-    component->choice.returnResultLast.resultretres->opCode.present
-            = OPERATION_PR_localValue;
-    component->choice.returnResultLast.resultretres->opCode.choice.localValue
-            = *intT; // moForward TODO get from inco
+    component->choice.returnResultLast.resultretres->opCode.present = OPERATION_PR_localValue;
+    component->choice.returnResultLast.resultretres->opCode.choice.localValue = intT; // moForward TODO get from inco
 
     ANY_t* parameter = (ANY_t*) calloc(1,sizeof(ANY_t));
     parameter->buf = (uint8_t*) calloc(1, _resultData.size());
@@ -312,7 +311,7 @@ ByteStream TcapMessage::end(int _invokeId,
     componentPort = (ComponentPortion_t*) calloc(1,sizeof(ComponentPortion_t));
 
     void* foo = &(componentPort->list);
-    rc = ASN_SEQUENCE_ADD(foo, component);
+    int rc = ASN_SEQUENCE_ADD(foo, component);
     tcMsg->choice.end.components =  componentPort;
 
     /* Encode the TCMessage type as BER (DER) */
@@ -389,7 +388,7 @@ ByteStream TcapMessage::begin(const ByteStream &_componentData)
     ANY_t* anyAdapter = (ANY_t*) calloc(1, sizeof(ANY_t));
     ExternalPDU_t* externalPDU = (ExternalPDU_t*) calloc(1,sizeof(ExternalPDU_t));
 //    DialoguePDU_t* dialoguePDU = (DialoguePDU_t*) calloc(1,sizeof(DialoguePDU_t));
-    AARQ_apdu_t* aarq = (AARQ_apdu_t*) calloc(1,sizeof(AARQ_apdu_t));
+//    AARQ_apdu_t* aarq = (AARQ_apdu_t*) calloc(1,sizeof(AARQ_apdu_t));
 //
 //    ANY_fromType((ANY_t *) &externalPDU->dialog, &asn_DEF_DialoguePDU, dialoguePDU);
     ANY_fromType(anyAdapter, &asn_DEF_ExternalPDU, externalPDU);
@@ -402,16 +401,16 @@ ByteStream TcapMessage::begin(const ByteStream &_componentData)
 //    // shortMsgMT-RelayContext-v3
 //    const uint8_t map_as_dialogue[] = { 0, 4, 0, 0, 1, 0, 25, 3 };
 //
-    OBJECT_IDENTIFIER_set_arcs( &aarq->application_context_name, map_as_dialogue,
-                               sizeof(map_as_dialogue[0]), 8);
+//    OBJECT_IDENTIFIER_set_arcs( &aarq->application_context_name, map_as_dialogue,
+//                               sizeof(map_as_dialogue[0]), 8);
 //
-    OBJECT_IDENTIFIER_set_arcs(&externalPDU->oid,
-					   &tcap_id_as_dialogue,
-					   sizeof(tcap_id_as_dialogue[0]),
-             sizeof(tcap_id_as_dialogue)/sizeof(tcap_id_as_dialogue[0]));
+//    OBJECT_IDENTIFIER_set_arcs(&externalPDU§->oid,
+//					   &tcap_id_as_dialogue,
+//					   sizeof(tcap_id_as_dialogue[0]),
+//            sizeof(tcap_id_as_dialogue)/sizeof(tcap_id_as_dialogue[0]));
 
-    aarq->protocol_version =  &dial_version1;
-    aarq->user_information = 0;
+//    aarq->protocol_version =  &dial_version1;
+//    aarq->user_information = 0;
 //
 //
 //    dialoguePDU->present = DialoguePDU_PR_dialogueRequest; // AARQ
@@ -434,13 +433,15 @@ ByteStream TcapMessage::begin(const ByteStream &_componentData)
     // operation for invoke 1 (for component)
     OPERATION_t* operationType = (OPERATION_t*) calloc(1,sizeof(OPERATION_t));
 
-    INTEGER_t* intT = (INTEGER_t*) calloc(1,sizeof(INTEGER_t));
-    int rc = asn_long2INTEGER(intT, 44); // 46= moForward, 44=mtForward
-    if (rc != 0)						// OPERATION CODE NOLLAKSI
-        throw("can't convert long to INTEGER");
+//    INTEGER_t* intT = (INTEGER_t*) calloc(1,sizeof(INTEGER_t));
+//    int rc = asn_long2INTEGER(intT, 44); // 46= moForward, 44=mtForward			tarviiko tommosii konversioita tehdä
+//    if (rc != 0)						// OPERATION CODE NOLLAKSI
+//        throw("can't convert long to INTEGER");
+
+    long int* intT = 0;
 
     operationType->present = OPERATION_PR_localValue;
-    operationType->choice.localValue = *intT; // MAP local operation code!
+    operationType->choice.localValue = *intT; // local operation code!
 
     // MAP parameter into invoke
 
@@ -474,7 +475,7 @@ ByteStream TcapMessage::begin(const ByteStream &_componentData)
 //    beginMsg->dialoguePortion = (OCTET_STRING_t*) anyAdapter;
     void* foo = &(componentPort->list);
 
-    rc = ASN_SEQUENCE_ADD(foo, component);
+    int rc = ASN_SEQUENCE_ADD(foo, component);
     if (rc != 0) {
         std::cout << "asn_seq_add() = rc=" << rc << ",errno: " << errno;
         throw("can't insert sequence");
