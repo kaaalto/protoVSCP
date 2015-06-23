@@ -35,7 +35,7 @@
 #include <time.h>
 
 //static const int tcap_id_as_dialogue[] = { 0, 0, 17, 773, 1, 1, 1 };
-static uint8_t _dial_version1 = 0x80;
+//static uint8_t _dial_version1 = 0x80;
 //static BIT_STRING_t dial_version1 = { &_dial_version1, 1, 7 };
 
 
@@ -224,8 +224,8 @@ ByteStream TcapMessage::end(int _invokeId,
     tcMsg->choice.end.dtid.buf[3] = (_transactionId >> 24) & 0xff;
 
     // build ExternalPDU, DialoguePDU and AARQ apdu
-    ANY_t* anyAdapter = (ANY_t*) calloc(1, sizeof(ANY_t));
-    ExternalPDU_t* externalPDU = (ExternalPDU_t*) calloc(1,sizeof(ExternalPDU_t));
+//    ANY_t* anyAdapter = (ANY_t*) calloc(1, sizeof(ANY_t));
+//    ExternalPDU_t* externalPDU = (ExternalPDU_t*) calloc(1,sizeof(ExternalPDU_t));
 //    DialoguePDU_t* dialoguePDU = (DialoguePDU_t*) calloc(1,sizeof(DialoguePDU_t));
 //    AARE_apdu_t* aare = (AARE_apdu_t*) calloc(1,sizeof(AARE_apdu_t));
 
