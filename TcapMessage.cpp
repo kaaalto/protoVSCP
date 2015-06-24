@@ -223,7 +223,7 @@ ByteStream TcapMessage::end(int _invokeId,
     tcMsg->choice.end.dtid.buf[2] = (_transactionId >> 16) & 0xff;
     tcMsg->choice.end.dtid.buf[3] = (_transactionId >> 24) & 0xff;
 
-    // build ExternalPDU, DialoguePDU and AARQ apdu
+//    build ExternalPDU, DialoguePDU and AARQ apdu
 //    ANY_t* anyAdapter = (ANY_t*) calloc(1, sizeof(ANY_t));
 //    ExternalPDU_t* externalPDU = (ExternalPDU_t*) calloc(1,sizeof(ExternalPDU_t));
 //    DialoguePDU_t* dialoguePDU = (DialoguePDU_t*) calloc(1,sizeof(DialoguePDU_t));
@@ -434,7 +434,7 @@ ByteStream TcapMessage::begin(const ByteStream &_componentData)
     OPERATION_t* operationType = (OPERATION_t*) calloc(1,sizeof(OPERATION_t));
 
 //    INTEGER_t* intT = (INTEGER_t*) calloc(1,sizeof(INTEGER_t));
-//    int rc = asn_long2INTEGER(intT, 44); // 46= moForward, 44=mtForward			tarviiko tommosii konversioita tehdä
+//    int rc = asn_long2INTEGER(intT, 44); // 46= moForward, 44=mtForward
 //    if (rc != 0)						// OPERATION CODE NOLLAKSI
 //        throw("can't convert long to INTEGER");
 

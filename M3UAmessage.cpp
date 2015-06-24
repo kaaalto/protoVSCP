@@ -1,5 +1,3 @@
-
-
 #include "M3UAmessage.hpp"
 #include <iostream>
 #include <iomanip>
@@ -21,79 +19,6 @@ M3UAmessage::M3UAmessage() : M3UAtype(UNKNOWN)
 
 M3UAmessage::M3UAmessage(ByteStream &_incoming) : M3UAtype(UNKNOWN)
 {
-
-	/*
-	   The following list contains the valid Message Type Classes:
-
-        0     Management (MGMT) Messages
-        1     Transfer Messages
-        2     SS7 Signalling Network Management (SSNM) Messages
-        3     ASP State Maintenance (ASPSM) Messages
-        4     ASP Traffic Maintenance (ASPTM) Messages
-        5     Reserved for Other SIGTRAN Adaptation Layers
-        6     Reserved for Other SIGTRAN Adaptation Layers
-        7     Reserved for Other SIGTRAN Adaptation Layers
-        8     Reserved for Other SIGTRAN Adaptation Layers
-        9     Routing Key Management (RKM) Messages
-       10 to 127 Reserved by the IETF
-      128 to 255 Reserved for IETF-Defined Message Class extensions
-
-	 Message Type: 8 bits (unsigned integer)
-
-      The following list contains the message types for the defined
-      messages.
-
-      Management (MGMT) Messages (see Section 3.8)
-
-           0        Error (ERR)
-           1        Notify (NTFY)
-        2 to 127    Reserved by the IETF
-      128 to 255    Reserved for IETF-Defined MGMT extensions
-
-      Transfer Messages (see Section 3.3)
-
-           0        Reserved
-           1        Payload Data (DATA)
-        2 to 127    Reserved by the IETF
-      128 to 255    Reserved for IETF-Defined Transfer extensions
-
-      SS7 Signalling Network Management (SSNM) Messages (see Section
-      3.4)
-
-           0        Reserved
-           1        Destination Unavailable (DUNA)
-           2        Destination Available (DAVA)
-           3        Destination State Audit (DAUD)
-           4        Signalling Congestion (SCON)
-           5        Destination User Part Unavailable (DUPU)
-           6        Destination Restricted (DRST)
-        7 to 127    Reserved by the IETF
-      128 to 255    Reserved for IETF-Defined SSNM extensions
-
-      ASP State Maintenance (ASPSM) Messages (see Section 3.5)
-
-           0        Reserved
-           1        ASP Up (ASPUP)
-           2        ASP Down (ASPDN)
-           3        Heartbeat (BEAT)
-           4        ASP Up Acknowledgement (ASPUP ACK)
-           5        ASP Down Acknowledgement (ASPDN ACK)
-           6        Heartbeat Acknowledgement (BEAT ACK)
-        7 to 127    Reserved by the IETF
-      128 to 255    Reserved for IETF-Defined ASPSM extensions
-
-      ASP Traffic Maintenance (ASPTM) Messages (see Section 3.7)
-
-           0        Reserved
-           1        ASP Active (ASPAC)
-           2        ASP Inactive (ASPIA)
-           3        ASP Active Acknowledgement (ASPAC ACK)
-           4        ASP Inactive Acknowledgement (ASPIA ACK)
-        5 to 127    Reserved by the IETF
-      128 to 255    Reserved for IETF-Defined ASPTM extensions
-
-	 */
-
 	unsigned char msgType, msgClass;
 
 	LOG("Incoming M3UA message: " << _incoming.size() );

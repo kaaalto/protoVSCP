@@ -3,7 +3,7 @@
 #include "SctpConnection.hpp"
 #include "M3UAmessage.hpp"
 #include "TcapMessage.hpp"
-//#include "InapMessage.hpp"
+#include "InapMessage.hpp"
 
 #include "TCMessage.h"
 
@@ -90,17 +90,27 @@ int main (int argc, char *argv[])
     			ByteStream M3uaData;
     			incomingM3uaMsg.decodePayload();
     			M3uaData = incomingM3uaMsg.getPayload();
-    			break;
+
 
     			// TODO handle TCAP data
 
-    			TcapMessage TMessage;
+    			TcapMessage TcapMsg(M3uaData);
 
-    			TMessage(M3uaData);
-
-    			int localCode = TMessage.operationLocalCode();
+    			// get data from TcapMessage
+    			int localCode = TcapMsg.operationLocalCode();
+    			int otid = TcapMsg.transactionId();
+    			int invokeID = TcapMsg.invokeId();
+    			ByteStream TcapParameterData = TcapMsg.parameterData();
 
     			// TODO handle INAP data
+
+    			InapMessage inapMsg(localCode, TcapParameterData);
+
+    			const char _calledPartyNum = inapMsg.getCalledPartyNumber();
+
+    			// TODO searchDB(_calledPartyNum);
+
+    			break;
     		}
     		default:
     		{
