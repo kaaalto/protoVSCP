@@ -11,6 +11,8 @@
 #define LOG(x) \
     std::cout << __FILE__ << "::" << __FUNCTION__ << ":" << __LINE__ << ": " << x << std::endl;
 
+
+
 M3UAmessage::M3UAmessage() : M3UAtype(UNKNOWN)
 {
 	return;
@@ -19,6 +21,78 @@ M3UAmessage::M3UAmessage() : M3UAtype(UNKNOWN)
 
 M3UAmessage::M3UAmessage(ByteStream &_incoming) : M3UAtype(UNKNOWN)
 {
+
+	/*
+	   The following list contains the valid Message Type Classes:
+
+        0     Management (MGMT) Messages
+        1     Transfer Messages
+        2     SS7 Signalling Network Management (SSNM) Messages
+        3     ASP State Maintenance (ASPSM) Messages
+        4     ASP Traffic Maintenance (ASPTM) Messages
+        5     Reserved for Other SIGTRAN Adaptation Layers
+        6     Reserved for Other SIGTRAN Adaptation Layers
+        7     Reserved for Other SIGTRAN Adaptation Layers
+        8     Reserved for Other SIGTRAN Adaptation Layers
+        9     Routing Key Management (RKM) Messages
+       10 to 127 Reserved by the IETF
+      128 to 255 Reserved for IETF-Defined Message Class extensions
+
+	 Message Type: 8 bits (unsigned integer)
+
+      The following list contains the message types for the defined
+      messages.
+
+      Management (MGMT) Messages (see Section 3.8)
+
+           0        Error (ERR)
+           1        Notify (NTFY)
+        2 to 127    Reserved by the IETF
+      128 to 255    Reserved for IETF-Defined MGMT extensions
+
+      Transfer Messages (see Section 3.3)
+
+           0        Reserved
+           1        Payload Data (DATA)
+        2 to 127    Reserved by the IETF
+      128 to 255    Reserved for IETF-Defined Transfer extensions
+
+      SS7 Signalling Network Management (SSNM) Messages (see Section
+      3.4)
+
+           0        Reserved
+           1        Destination Unavailable (DUNA)
+           2        Destination Available (DAVA)
+           3        Destination State Audit (DAUD)
+           4        Signalling Congestion (SCON)
+           5        Destination User Part Unavailable (DUPU)
+           6        Destination Restricted (DRST)
+        7 to 127    Reserved by the IETF
+      128 to 255    Reserved for IETF-Defined SSNM extensions
+
+      ASP State Maintenance (ASPSM) Messages (see Section 3.5)
+
+           0        Reserved
+           1        ASP Up (ASPUP)
+           2        ASP Down (ASPDN)
+           3        Heartbeat (BEAT)
+           4        ASP Up Acknowledgement (ASPUP ACK)
+           5        ASP Down Acknowledgement (ASPDN ACK)
+           6        Heartbeat Acknowledgement (BEAT ACK)
+        7 to 127    Reserved by the IETF
+      128 to 255    Reserved for IETF-Defined ASPSM extensions
+
+      ASP Traffic Maintenance (ASPTM) Messages (see Section 3.7)
+
+           0        Reserved
+           1        ASP Active (ASPAC)
+           2        ASP Inactive (ASPIA)
+           3        ASP Active Acknowledgement (ASPAC ACK)
+           4        ASP Inactive Acknowledgement (ASPIA ACK)
+        5 to 127    Reserved by the IETF
+      128 to 255    Reserved for IETF-Defined ASPTM extensions
+
+	 */
 
 	unsigned char msgType, msgClass;
 
@@ -30,7 +104,7 @@ M3UAmessage::M3UAmessage(ByteStream &_incoming) : M3UAtype(UNKNOWN)
 		LOG ("M3UA - message too short");
 		return;
 	}
-	if (_incoming[0] != 0x01 || _incoming[0] != 0x00)
+	if (_incoming[0] != 0x01 )
 	{
 		LOG("M3UA - Invalid protocol version");
 		return;
@@ -51,10 +125,12 @@ M3UAmessage::M3UAmessage(ByteStream &_incoming) : M3UAtype(UNKNOWN)
 	case 4:			// ASPTM
 		if (msgType == 3) M3UAtype = ASPTM_ASPAC_ACK;
 		break;
-	case 1:
+	case 1:			// Transfer Messages
 		if (msgType == 1) M3UAtype = TM_DATA;
-
+		break;
 	default:
+		LOG("Unsupported M3UAtype");
+
 		break;
 	}
 	if (M3UAtype != UNKNOWN)
@@ -63,13 +139,9 @@ M3UAmessage::M3UAmessage(ByteStream &_incoming) : M3UAtype(UNKNOWN)
 		return;
 	}
 	else {
-		LOG("Unsupported M3UAtype");
+		LOG("Class: " << msgClass << ", type: " << msgType);
 		return;
 	}
-
-
-
-		// wot??
 
     int messageLength = 0;
     messageLength |= (_incoming[4] & 0xff000000);
@@ -229,7 +301,6 @@ int M3UAmessage::aspACTIVE(const SctpConnection &_scptConn)
 
 	//LOG("msg: "<< msg );
 	LOG("SCTP_PID: "<< SCTP_PID_M3UA);
-
 
 	return 0;
 
@@ -396,20 +467,22 @@ ByteStream M3UAmessage::commonHeader(unsigned char _msgClass, unsigned char _msg
 	return bs;
 
 }
+
+void M3UAmessage::decodePayload()
+
+{
+
+	if(M3UAtype != TM_DATA)
+	{
+			LOG("DECODING FAILED - M3UA TYPE NOT DATA");
+			return;
+	}
+
+
 /*
  *
  * 3.3.1.  Payload Data Message (DATA)
 
-   The DATA message contains the SS7 MTP3-User protocol data, which is
-   an MTP-TRANSFER primitive, including the complete MTP3 Routing Label.
-   The DATA message contains the following variable-length parameters:
-
-        Network Appearance       Optional
-        Routing Context          Conditional
-        Protocol Data            Mandatory
-        Correlation Id           Optional
-
-   The following format MUST be used for the Data Message:
 
        0                   1                   2                   3
        0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
@@ -433,51 +506,52 @@ ByteStream M3UAmessage::commonHeader(unsigned char _msgClass, unsigned char _msg
       |                        Correlation Id                         |
       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
-   Network Appearance: 32 bits (unsigned integer)
+	Network Appearance: 32 bits (unsigned integer)
 
-      The Network Appearance parameter identifies the SS7 network
-      context for the message and implicitly identifies the SS7 Point
-      Code format used, the SS7 Network Indicator value, and the MTP3
-      and possibly the MTP3-User protocol type/variant/version used
-      within the specific SS7 network.  Where an SG operates in the
-      context of a single SS7 network, or if individual SCTP
-      associations are dedicated to each SS7 network context, the
-      Network Appearance parameter is not required.  In other cases, the
-      parameter may be configured to be present for the use of the
-      receiver.
+	Routing Context: 32 bits (unsigned integer)
 
-      The Network Appearance parameter value is of local significance
-      only, coordinated between the SGP and ASP.  Therefore, in the case
-      where an ASP is connected to more than one SGP, the same SS7
-      network context may be identified by different Network Appearance
-      values, depending on which SGP a message is being transmitted/
-      received.
+	Protocol Data: variable length
 
-      Where the optional Network Appearance parameter is present, it
-      MUST be the first parameter in the message, as it defines the
-      format of the Protocol Data field.
+	 */
 
-      IMPLEMENTATION NOTE: For simplicity of configuration, it may be
-      desirable to use the same NA value across all nodes sharing a
-      particular network context.
+	int dataLen = 0;
 
-   Routing Context: 32 bits (unsigned integer)
+	for (size_t i = 0; i<m_msg.size(); i++ ) // skip over Network Appearance and Routing Context
+	{
+		if (m_msg[i] == 0x02 && m_msg[i+1] == 0x10)
+		{
+			dataLen = m_msg[i+3];
+			dataLen -= 4;	//
+			i += 4;			// skip tag & length
 
-      The Routing Context parameter contains the Routing Context value
-      associated with the DATA message.  Where a Routing Key has not
-      been coordinated between the SGP and ASP, sending of Routing
-      Context is not required.  Where multiple Routing Keys and Routing
-      Contexts are used across a common association, the Routing Context
-      MUST be sent to identify the traffic flow, assisting in the
-      internal distribution of Data messages.
+			LOG("datalength: " << dataLen << "from : " << i);
 
-   Protocol Data: variable length
+			if(i+dataLen-1 > m_msg.size())
+			{
+				LOG("ERROR - INVALID DATALENGTH TAG FOUND");
+			}
 
-      The Protocol Data parameter contains the original SS7 MTP3
-      message, including the Service Information Octet and Routing
-      Label.
- *
- *
- */
+			for(int x; x < dataLen; x++)
+			{
+				payload.push_back(m_msg[x+i]);
+			}
+		}
+	}
+}
+
+ByteStream M3UAmessage::getPayload()
+{
+
+	LOG("getPayload");
+
+	if (M3UAtype != TM_DATA)
+	{
+		ByteStream dummy;
+		LOG("ERROR - CANNOT RETURN M3UA DATA - INVALID TYPE ") ;
+		return dummy;
+	}
+
+	return payload;
+}
 
 

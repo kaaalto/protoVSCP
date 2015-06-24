@@ -33,14 +33,15 @@ public:
 	bool valid(void) { if (M3UAtype == UNKNOWN) { return false; } return true; }
 	M3UAMessages M3UAMsgType(void) { return M3UAtype; }
 
-
-// TODO	ByteStream getDataPayload() const;
+	void decodePayload();
+	ByteStream getPayload();
 
 
 
 private:
 	ByteStream commonHeader(unsigned char, unsigned char,unsigned int);
 	ByteStream m_msg;
+	ByteStream payload;
 };
 
 #endif /* M3UAMESSAGE_HPP_ */

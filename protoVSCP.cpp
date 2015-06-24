@@ -3,6 +3,7 @@
 #include "SctpConnection.hpp"
 #include "M3UAmessage.hpp"
 #include "TcapMessage.hpp"
+//#include "InapMessage.hpp"
 
 #include "TCMessage.h"
 
@@ -27,15 +28,11 @@ int main (int argc, char *argv[])
 
     LOG ( "SCTP stream up! ..." );
 
-    //TODO: M3UA implementation
+
     M3UAmessage m3uamsg;
     m3uamsg.aspUP(sc);
 
 	LOG("ASP UP sent");
-
-
-	m3uamsg.aspACTIVE(sc);
-
 
     fd_set rfds;
     int retval;
@@ -60,7 +57,7 @@ int main (int argc, char *argv[])
     		int ret = sc.waitForMsg(incomingMsg);
     		if (ret < 1) break;
 
-    		M3UAmessage incomingM3uaMsg;
+    		M3UAmessage incomingM3uaMsg(incomingMsg);
     		if (incomingM3uaMsg.valid() == false)
     		{
     			LOG("incomingM3uaMsg is of UNKNOWN TYPE");
@@ -70,31 +67,51 @@ int main (int argc, char *argv[])
     		switch (incomingM3uaMsg.M3UAMsgType())
     		{
     		case M3UAmessage::ASPSM_ASPUP_ACK:
+    		{
     			LOG("M3uaMsgType: ASPSM_ASPUP_ACK");
-
-    		case M3UAmessage::ASPTM_ASPAC_ACK:
-    			LOG("M3uaMsgType: ASPTM_ASPAC_ACK");
-
-    		case M3UAmessage::MGMT_NTFY:
-    			LOG("M3uaMsgType: MGMT_NTFY");
-
-    		case M3UAmessage::TM_DATA:
-    			LOG("M3uaMsgType: TM_DATA");
-
-    		default:
-    			LOG("M3uaMsgType : Unknown");
+    			m3uamsg.aspACTIVE(sc);
     			break;
     		}
-    	}
 
+    		case M3UAmessage::ASPTM_ASPAC_ACK:
+    		{
+    			LOG("M3uaMsgType: ASPTM_ASPAC_ACK");
+    			break;
+    		}
+    		case M3UAmessage::MGMT_NTFY:
+    		{
+    			LOG("M3uaMsgType: MGMT_NTFY");
+    			break;
+    		}
+    		case M3UAmessage::TM_DATA:
+    		{
+    			LOG("M3uaMsgType: TM_DATA");
+
+    			ByteStream M3uaData;
+    			incomingM3uaMsg.decodePayload();
+    			M3uaData = incomingM3uaMsg.getPayload();
+    			break;
+
+    			// TODO handle TCAP data
+
+    			TcapMessage TMessage;
+
+    			TMessage(M3uaData);
+
+    			int localCode = TMessage.operationLocalCode();
+
+    			// TODO handle INAP data
+    		}
+    		default:
+    		{
+    			LOG("M3uaMsgType : UNKNOWN ");
+    			break;
+				}
+    		}
+    	}
     }
 
 
-	//TODO: TCAP implementation
-
-
-
-    //TODO: INAP implementation
 
     LOG ("program end")
     return 0;
