@@ -104,8 +104,9 @@ int main (int argc, char *argv[])
     			if (incomingSccpData.valid())
     			{
     				incomingSccpData.decodeSccp();
+    				LOG("sccpData decoded");
     				SccpData = incomingSccpData.getData();
-
+    				LOG("SccpData size: " << SccpData.size());
 
 
     			// TCAP

@@ -40,9 +40,10 @@ SccpMessage::SccpMessage(ByteStream &_incoming) : valChk(VALID)
 void SccpMessage::decodeSccp()
 {
 	LOG("Decoding SCCP ...");
+	LOG("SCCP msg size: " << m_msg.size());
 
-	unsigned int callingPartyStart = 10;
-	unsigned int dataStart = 21;
+	unsigned int callingPartyStart = 9;
+	unsigned int dataStart = callingPartyStart + 11;
 
 	/*
 	  Parameter 			Clause 		Type (F V O) 		Length (octets)
@@ -58,13 +59,15 @@ void SccpMessage::decodeSccp()
 	NOTE 2 − The minimum length = 2 might apply in the special case of AI = X0000000 described in 3.5.
 	 */
 
-	for(size_t i = callingPartyStart; i < m_msg.size() ; i++)
+	for(size_t i = callingPartyStart; i < m_msg.size(); i++)
 	{
 		callingPartyAddress.push_back(m_msg[i]);
+		LOG("callingPartyAddress size: " <<  callingPartyAddress.size());
 
-		while (i < dataStart)
+		while (i > dataStart && i < m_msg.size())/// ???????
 		{
 			payload.push_back(m_msg[i]);
+			LOG("payload size: " << payload.size());
 		}
 	}
 }
@@ -73,6 +76,7 @@ void SccpMessage::decodeSccp()
 
 ByteStream SccpMessage::getData()
 {
+	LOG("SCCP data size: " << payload.size());
 	return payload;
 }
 
