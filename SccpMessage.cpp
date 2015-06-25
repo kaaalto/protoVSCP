@@ -27,7 +27,7 @@ SccpMessage::SccpMessage(ByteStream &_incoming) : valChk(VALID)
 
 	if(_incoming[1] != 0x81)
 	{
-		LOG("ERROR  -  INVALID SCCP PROTOCOL CLASS: " << _incoming[1]);	// must be 0x01 sequenced connectionless
+		LOG("ERROR  -  INVALID SCCP PROTOCOL CLASS: " << _incoming[1]);	// must be 0x81 message handling && sequenced connectionless
 		valChk = INVALID;
 		return;
 	}
@@ -62,7 +62,7 @@ void SccpMessage::decodeSccp()
 	{
 		callingPartyAddress.push_back(m_msg[i]);
 
-		while (i > dataStart)
+		while (i < dataStart)
 		{
 			payload.push_back(m_msg[i]);
 		}
