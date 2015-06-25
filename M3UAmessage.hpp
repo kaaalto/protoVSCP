@@ -34,7 +34,7 @@ public:
 	M3UAMessages M3UAMsgType(void) { return M3UAtype; }
 
 	void decodePayload();
-	ByteStream getPayload();
+	ByteStream getPayload() const;
 
 
 

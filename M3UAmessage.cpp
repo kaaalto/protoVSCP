@@ -26,12 +26,12 @@ M3UAmessage::M3UAmessage(ByteStream &_incoming) : M3UAtype(UNKNOWN)
 
 	if (_incoming.size() < 8)
 	{
-		LOG ("M3UA - message too short");
+		LOG ("ERROR  -  M3UA: message too short");
 		return;
 	}
 	if (_incoming[0] != 0x01 )
 	{
-		LOG("M3UA - Invalid protocol version");
+		LOG("ERROR  -  M3UA: Invalid protocol version");
 		return;
 	}
 
@@ -55,13 +55,11 @@ M3UAmessage::M3UAmessage(ByteStream &_incoming) : M3UAtype(UNKNOWN)
 		break;
 	default:
 		LOG("Unsupported M3UAtype");
-
 		break;
 	}
 	if (M3UAtype != UNKNOWN)
 	{
 		LOG("M3UAType : " << M3UAtype);
-		return;
 	}
 	else {
 		LOG("Class: " << msgClass << ", type: " << msgType);
@@ -397,6 +395,7 @@ void M3UAmessage::decodePayload()
 
 {
 
+	LOG("decodePayload()");
 	if(M3UAtype != TM_DATA)
 	{
 			LOG("DECODING FAILED - M3UA TYPE NOT DATA");
@@ -441,19 +440,45 @@ void M3UAmessage::decodePayload()
 
 	int dataLen = 0;
 
-	for (size_t i = 0; i<m_msg.size(); i++ ) // skip over Network Appearance and Routing Context
+	for (size_t i = 0; i<m_msg.size(); i++ )
 	{
 		if (m_msg[i] == 0x02 && m_msg[i+1] == 0x10)
 		{
 			dataLen = m_msg[i+3];
-			dataLen -= 4;	//
-			i += 4;			// skip tag & length
 
-			LOG("datalength: " << dataLen << "from : " << i);
+/*			   The Protocol Data parameter is encoded as follows:
+ *
+ *			        0                   1                   2                   3
+ *			        0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+ *			       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *			       |                     Originating Point Code                    |
+ *			       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *			       |                     Destination Point Code                    |
+ *			       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *			       |       SI      |       NI      |      MP       |      SLS      |
+ *			       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *			       \                                                               \
+ *			       /                     User Protocol Data                        /
+ *			       \                                                               \
+ *			       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *
+ *		   Originating Point Code: 32 bits (unsigned integer)
+ *		   Destination Point Code: 32 bits (unsigned integer)
+ *		   Service Indicator: 8 bits (unsigned integer)
+ *		   Network Indicator: 8 bits (unsigned integer)
+ *		   Message Priority: 8 bits (unsigned integer)
+ *		   Signalling Link Selection: 8 bits (unsigned integer)
+ *		   User Protocol Data: variable-length octet string
+ */
 
-			if(i+dataLen-1 > m_msg.size())
+			dataLen -= 16;		// ignore & skip 16 bytes(tag, length and useless parameters)
+			i += 16;			//
+
+			LOG("datalength: " << dataLen << " from: " << i);
+
+			if(i + dataLen - 1 > m_msg.size())
 			{
-				LOG("ERROR - INVALID DATALENGTH TAG FOUND");
+				LOG("ERROR - INVALID LENGTH TAG");
 			}
 
 			for(int x; x < dataLen; x++)
@@ -462,9 +487,14 @@ void M3UAmessage::decodePayload()
 			}
 		}
 	}
+	if(dataLen == 0)
+	{
+		LOG("ERROR  -  NO DATA PAYLOAD FOUND IN M3UA");
+	}
+
 }
 
-ByteStream M3UAmessage::getPayload()
+ByteStream M3UAmessage::getPayload() const
 {
 
 	LOG("getPayload");
@@ -475,7 +505,7 @@ ByteStream M3UAmessage::getPayload()
 		LOG("ERROR - CANNOT RETURN M3UA DATA - INVALID TYPE ") ;
 		return dummy;
 	}
-
+	LOG ("Payload size: " << payload.size());
 	return payload;
 }
 

@@ -4,6 +4,8 @@
 #include "M3UAmessage.hpp"
 #include "TcapMessage.hpp"
 #include "InapMessage.hpp"
+#include "SccpMessage.h"
+
 
 #include "TCMessage.h"
 
@@ -20,6 +22,8 @@ int main (int argc, char *argv[])
 	int portNum = 2905;
 	const char* remoteAdd = "192.168.1.154";
 
+	// establish SCTP connection
+
 	SctpConnection sc;
 	LOG ( "connecting to: " << remoteAdd << ", port: " << portNum  );
 
@@ -28,6 +32,7 @@ int main (int argc, char *argv[])
 
     LOG ( "SCTP stream up! ..." );
 
+    // M3UA
 
     M3UAmessage m3uamsg;
     m3uamsg.aspUP(sc);
@@ -91,10 +96,21 @@ int main (int argc, char *argv[])
     			incomingM3uaMsg.decodePayload();
     			M3uaData = incomingM3uaMsg.getPayload();
 
+    			// SCCP
 
-    			// TODO handle TCAP data
+    			ByteStream SccpData;
+    			SccpMessage incomingSccpData(M3uaData);
 
-    			TcapMessage TcapMsg(M3uaData);
+    			if (incomingSccpData.valid())
+    			{
+    				incomingSccpData.decodeSccp();
+    				SccpData = incomingSccpData.getData();
+
+
+
+    			// TCAP
+
+    		/*	TcapMessage TcapMsg(M3uaData);
 
     			// get data from TcapMessage
     			int localCode = TcapMsg.operationLocalCode();
@@ -102,13 +118,13 @@ int main (int argc, char *argv[])
     			int invokeID = TcapMsg.invokeId();
     			ByteStream TcapParameterData = TcapMsg.parameterData();
 
-    			// TODO handle INAP data
-
-    			InapMessage inapMsg(localCode, TcapParameterData);
-
-    			const char _calledPartyNum = inapMsg.getCalledPartyNumber();
-
+    			// INAP
+    			//	InapMessage inapMsg(localCode, TcapParameterData);
+    			//	const char _calledPartyNum = inapMsg.getCalledPartyNumber();
+    		*/
     			// TODO searchDB(_calledPartyNum);
+
+    			}
 
     			break;
     		}
