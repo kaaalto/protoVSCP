@@ -25,10 +25,10 @@ SccpMessage::SccpMessage(ByteStream &_incoming) : valChk(VALID)
 		return;
 	}
 
-	if(_incoming[1] != 0x81)
+	if(_incoming[1] != 0x81 || _incoming[1] != 0x80)
 	{
-		LOG("ERROR  -  INVALID SCCP PROTOCOL CLASS: " << _incoming[1]);	// must be 0x81 message handling && sequenced connectionless
-		valChk = INVALID;
+		LOG("ERROR  -  INVALID SCCP PROTOCOL CLASS ");	// must be 0x80 message handling
+		valChk = INVALID;								// 0x01 sequenced connectionless or 0x00 basic connectionless
 		return;
 	}
 
@@ -42,8 +42,8 @@ void SccpMessage::decodeSccp()
 	LOG("Decoding SCCP ...");
 	LOG("SCCP msg size: " << m_msg.size());
 
-	unsigned int callingPartyStart = 9;
-	unsigned int dataStart = callingPartyStart + 11;
+	unsigned int callingPartyStart = 10;
+	unsigned int dataStart = callingPartyStart + 11;							// TESTAA KUN TUUT TAKAS
 
 	/*
 	  Parameter 			Clause 		Type (F V O) 		Length (octets)

@@ -109,6 +109,7 @@ int main (int argc, char *argv[])
     				LOG("SccpData size: " << SccpData.size());
 
 
+
     			// TCAP
 
     			TcapMessage incomingTcap(SccpData);
@@ -125,8 +126,8 @@ int main (int argc, char *argv[])
     			//	InapMessage inapMsg(localCode, TcapParameterData);
     			//	const char _calledPartyNum = inapMsg.getCalledPartyNumber();
 
-    			// TODO searchDB(_calledPartyNum);  XML-tiedosto eikä tietokantaa? tietoturva?
-    			// TODO KYSY AROMAALTA
+    			// TODO searchDB(_calledPartyNum);  XML-tiedosto eikä tietokantaa?
+
 
     			}
 

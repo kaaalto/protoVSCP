@@ -34,6 +34,9 @@
 #include <errno.h>
 #include <time.h>
 
+
+
+
 //static const int tcap_id_as_dialogue[] = { 0, 0, 17, 773, 1, 1, 1 };
 //static uint8_t _dial_version1 = 0x80;
 //static BIT_STRING_t dial_version1 = { &_dial_version1, 1, 7 };
@@ -67,6 +70,8 @@ TcapMessage::TcapMessage(ByteStream _incoming) :
     m_operationLocalCode(0),
     m_transactionId(0),
     m_invokeId(-1)
+
+
 {
     // decode
     LOG("len=" << _incoming.size() ) ;
@@ -113,7 +118,7 @@ TcapMessage::TcapMessage(ByteStream _incoming) :
         {
         case TCMessage_PR_begin:
         {
-            m_transactionId = msg->choice.begin.otid.buf[0];
+            m_transactionId  = msg->choice.begin.otid.buf[0];
             m_transactionId |= msg->choice.begin.otid.buf[1] << 8;
             m_transactionId |= msg->choice.begin.otid.buf[2] << 16;
             m_transactionId |= msg->choice.begin.otid.buf[3] << 24;
