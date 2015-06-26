@@ -59,16 +59,18 @@ void SccpMessage::decodeSccp()
 	NOTE 2 − The minimum length = 2 might apply in the special case of AI = X0000000 described in 3.5.
 	 */
 
-	for(size_t i = callingPartyStart; i < m_msg.size(); i++)
+	size_t i = callingPartyStart;
+
+	for(i; i < m_msg.size() && i < dataStart; i++)
 	{
 		callingPartyAddress.push_back(m_msg[i]);
-		LOG("callingPartyAddress size: " <<  callingPartyAddress.size());
+//		LOG("callingPartyAddress size: " <<  callingPartyAddress.size());
+	}
 
-		while (i > dataStart && i < m_msg.size())/// ???????
-		{
-			payload.push_back(m_msg[i]);
-			LOG("payload size: " << payload.size());
-		}
+	for (i; i > callingPartyAddress.size() && i < m_msg.size(); i++)
+	{
+		payload.push_back(m_msg[i]);
+//		LOG("payload size: " << payload.size());
 	}
 }
 
@@ -76,7 +78,6 @@ void SccpMessage::decodeSccp()
 
 ByteStream SccpMessage::getData()
 {
-	LOG("SCCP data size: " << payload.size());
 	return payload;
 }
 

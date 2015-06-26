@@ -99,31 +99,34 @@ int main (int argc, char *argv[])
     			// SCCP
 
     			ByteStream SccpData;
-    			SccpMessage incomingSccpData(M3uaData);
+    			SccpMessage incomingSccp(M3uaData);
 
-    			if (incomingSccpData.valid())
+    			if (incomingSccp.valid())
     			{
-    				incomingSccpData.decodeSccp();
+    				incomingSccp.decodeSccp();
     				LOG("sccpData decoded");
-    				SccpData = incomingSccpData.getData();
+    				SccpData = incomingSccp.getData();
     				LOG("SccpData size: " << SccpData.size());
 
 
     			// TCAP
 
-    		/*	TcapMessage TcapMsg(M3uaData);
+    			TcapMessage incomingTcap(SccpData);
 
     			// get data from TcapMessage
-    			int localCode = TcapMsg.operationLocalCode();
-    			int otid = TcapMsg.transactionId();
-    			int invokeID = TcapMsg.invokeId();
-    			ByteStream TcapParameterData = TcapMsg.parameterData();
+    			int localCode 					= incomingTcap.operationLocalCode();
+    			int otid 						= incomingTcap.transactionId();
+    			int invokeID 					= incomingTcap.invokeId();
+    			ByteStream TcapParameterData 	= incomingTcap.parameterData();
+
+    			LOG("localCode: " << localCode << " otid: " << otid << " invokeID: " << invokeID);
 
     			// INAP
     			//	InapMessage inapMsg(localCode, TcapParameterData);
     			//	const char _calledPartyNum = inapMsg.getCalledPartyNumber();
-    		*/
-    			// TODO searchDB(_calledPartyNum);
+
+    			// TODO searchDB(_calledPartyNum);  XML-tiedosto eikä tietokantaa? tietoturva?
+    			// TODO KYSY AROMAALTA
 
     			}
 
@@ -137,8 +140,6 @@ int main (int argc, char *argv[])
     		}
     	}
     }
-
-
 
     LOG ("program end")
     return 0;
