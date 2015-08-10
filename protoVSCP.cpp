@@ -4,7 +4,7 @@
 #include "M3UAmessage.hpp"
 #include "TcapMessage.hpp"
 #include "InapMessage.hpp"
-#include "SccpMessage.h"
+#include "SccpMessage.hpp"
 
 
 #include "TCMessage.h"
@@ -128,7 +128,7 @@ int main (int argc, char *argv[])
     			//	InapMessage inapMsg(localCode, TcapParameterData);
     			//	const char _calledPartyNum = inapMsg.getCalledPartyNumber();
 
-    			// TODO searchDB(_calledPartyNum);  XML-tiedosto eikä tietokantaa?
+    			// TODO searchDB(_calledPartyNum);
 
 
     			}

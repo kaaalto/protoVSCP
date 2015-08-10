@@ -1,6 +1,4 @@
-
-
-#include "SccpMessage.h"
+#include "SccpMessage.hpp"
 #include <iostream>
 #include <iomanip>
 #include <fstream>
@@ -43,8 +41,9 @@ void SccpMessage::decodeSccp()
 	LOG("Decoding SCCP ...");
 	LOG("SCCP msg size: " << m_msg.size());
 
+	unsigned int calledPartyStart = 2;
 	unsigned int callingPartyStart = 10;
-	unsigned int dataStart = callingPartyStart + 11;							// TESTAA KUN TUUT TAKAS
+	unsigned int dataStart = callingPartyStart + 11;
 
 	/*
 	  Parameter 			Clause 		Type (F V O) 		Length (octets)
@@ -53,26 +52,36 @@ void SccpMessage::decodeSccp()
 	Called party address 	3.4 		V 					3 minimum								// will always be 9 bytes in NGNlab network
 	Calling party address 	3.5 		V 					3 minimum 	(Note 2)					// will always be 11 bytes in NGNlab network? maybe?
 	Data 					3.16 		V 					2-X 		(Note 1)
-																									// TODO KYSY ARMOAALTA NOISTA
+
 	NOTE 1 − Due to the ongoing studies on the SCCP called and calling party address, the maximum length
 	of this parameter needs further study. It is also noted that the transfer of up to 255 octets of user data is
 	allowed when the SCCP called and calling party address do not include global title.
 	NOTE 2 − The minimum length = 2 might apply in the special case of AI = X0000000 described in 3.5.
 	 */
 
-	size_t i = callingPartyStart;
 
-	for(i; i < m_msg.size() && i < dataStart; i++)
+
+	for(size_t i = calledPartyStart; i < callingPartyStart && i >= calledPartyStart; i++)
+	{
+		calledPartyAddress.push_back(i);
+	}
+
+	LOG("calledPartyAddress size: " <<  calledPartyAddress.size());
+
+	for(size_t i = callingPartyStart; i >= calledPartyStart && i < dataStart; i++)
 	{
 		callingPartyAddress.push_back(m_msg[i]);
-//		LOG("callingPartyAddress size: " <<  callingPartyAddress.size());
 	}
 
-	for (i; i > callingPartyAddress.size() && i < m_msg.size(); i++)
+	LOG("callingPartyAddress size: " <<  callingPartyAddress.size());
+
+	for (size_t i = dataStart; i >= dataStart && i < m_msg.size(); i++)
 	{
 		payload.push_back(m_msg[i]);
-//		LOG("payload size: " << payload.size());
 	}
+
+	LOG("payload size: " << payload.size());
+
 }
 
 // TODO encode SCCP
@@ -81,8 +90,13 @@ ByteStream SccpMessage::getData()
 {
 	return payload;
 }
+ByteStream SccpMessage::getCalledPartyAddress()
+{
+	return calledPartyAddress;
+}
 
 ByteStream SccpMessage::getCallingPartyAddress()
 {
 	return callingPartyAddress;
 }
+
