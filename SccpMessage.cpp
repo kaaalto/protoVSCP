@@ -63,7 +63,7 @@ void SccpMessage::decodeSccp()
 
 	for(size_t i = calledPartyStart; i < callingPartyStart && i >= calledPartyStart; i++)
 	{
-		calledPartyAddress.push_back(i);
+		calledPartyAddress.push_back(m_msg[i]);
 	}
 
 	LOG("calledPartyAddress size: " <<  calledPartyAddress.size());
