@@ -76,28 +76,28 @@ TcapMessage::TcapMessage(ByteStream _incoming) :
     // decode
     LOG("len=" << _incoming.size() ) ;
 
-//        if (_incoming.size() > 21) {
-//
-//			// DialoguePortion / from External -> "Single-Asn.1-Type"
-//			if (_incoming[21] == 0xA0) {
-//				_incoming[21] = 0x80;
-//				LOG ("FIX #2 external -> asn1 type") ;
-//			}
-//			if (_incoming[22] == 0xA0) {
-//				_incoming[22] = 0x80;
-//				LOG ("FIX #2 external -> asn1 type") ;
-//			}
-//
-//			if (_incoming[8] == 0x6b) {
-//				_incoming[8] = 0x4b;
-//				LOG ("APPLICATION 11 (4b) -> UNIVERSAL 11 (6b) FIX #1 applied") ;
-//			}
-//
-//			if (_incoming[9] == 0x6b) {
-//				_incoming[9] = 0x4b;
-//				LOG ("APPLICATION 11 (4b) -> UNIVERSAL 11 (6b) FIX #1 applied") ;
-//        }
-//    }
+        if (_incoming.size() > 21) {
+
+			// DialoguePortion / from External -> "Single-Asn.1-Type"
+			if (_incoming[21] == 0xA0) {
+				_incoming[21] = 0x80;
+				LOG ("FIX #2 external -> asn1 type") ;
+			}
+			if (_incoming[22] == 0xA0) {
+				_incoming[22] = 0x80;
+				LOG ("FIX #2 external -> asn1 type") ;
+			}
+
+			if (_incoming[8] == 0x6b) {
+				_incoming[8] = 0x4b;
+				LOG ("APPLICATION 11 (4b) -> UNIVERSAL 11 (6b) FIX #1 applied") ;
+			}
+
+			if (_incoming[9] == 0x6b) {
+				_incoming[9] = 0x4b;
+				LOG ("APPLICATION 11 (4b) -> UNIVERSAL 11 (6b) FIX #1 applied") ;
+        }
+    }
 
     TCMessage_t *msg = 0;    /* Note this 0! */
     asn_dec_rval_t rval;
@@ -111,6 +111,7 @@ TcapMessage::TcapMessage(ByteStream _incoming) :
 
 
     if (rval.code == RC_OK) {
+    	LOG("ASN.1 Decode ok");
         std::cout << "ASN.1 Decode ok\n";
 
 

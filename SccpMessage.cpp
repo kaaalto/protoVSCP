@@ -1,4 +1,5 @@
 #include "SccpMessage.hpp"
+#include <sstream>
 #include <iostream>
 #include <iomanip>
 #include <fstream>
@@ -24,12 +25,12 @@ SccpMessage::SccpMessage(ByteStream &_incoming) : valChk(VALID)
 		return;
 	}
 
-	if(_incoming[1] != 0x81 || _incoming[1] != 0x80)
-	{
-		LOG("ERROR  -  INVALID SCCP PROTOCOL CLASS ");	// must be 0x80 message handling
-		valChk = INVALID;								// 0x01 sequenced connectionless or 0x00 basic connectionless
-		return;
-	}
+//	if(_incoming[1] != 0x81 || _incoming[1] != 0x80)
+//	{
+//		LOG("ERROR  -  INVALID SCCP PROTOCOL CLASS :" << _incoming[1]);	// must be 0x80 message handling
+//		valChk = INVALID;								// 0x01 sequenced connectionless or 0x00 basic connectionless
+//		return;
+//	}
 
 	LOG("SCCP valid");
 	m_msg = _incoming;
@@ -41,9 +42,11 @@ void SccpMessage::decodeSccp()
 	LOG("Decoding SCCP ...");
 	LOG("SCCP msg size: " << m_msg.size());
 
-	unsigned int calledPartyStart = 2;
-	unsigned int callingPartyStart = 10;
-	unsigned int dataStart = callingPartyStart + 11;
+	unsigned int calledPartyStart = m_msg[2];
+	unsigned int callingPartyStart = m_msg[3];
+	unsigned int dataStart = m_msg[4];
+
+	LOG("calledPartyStart: " << calledPartyStart << " callingPartyStart: " << callingPartyStart << " dataStart: " << dataStart );
 
 	/*
 	  Parameter 			Clause 		Type (F V O) 		Length (octets)
@@ -61,7 +64,7 @@ void SccpMessage::decodeSccp()
 
 
 
-	for(size_t i = calledPartyStart; i < callingPartyStart && i >= calledPartyStart; i++)
+	for(size_t i = calledPartyStart; i < callingPartyStart; i++)
 	{
 		calledPartyAddress.push_back(m_msg[i]);
 	}
@@ -81,7 +84,6 @@ void SccpMessage::decodeSccp()
 	}
 
 	LOG("payload size: " << payload.size());
-
 }
 
 // TODO encode SCCP
@@ -94,9 +96,7 @@ ByteStream SccpMessage::getCalledPartyAddress()
 {
 	return calledPartyAddress;
 }
-
 ByteStream SccpMessage::getCallingPartyAddress()
 {
 	return callingPartyAddress;
 }
-
