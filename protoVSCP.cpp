@@ -106,7 +106,7 @@ int main (int argc, char *argv[])
     			if (incomingSccp.valid())
     			{
     				incomingSccp.decodeSccp();
-    				LOG("sccpData decoded");
+    				LOG("SCCP decoded");
     				SccpData = incomingSccp.getData();
     				LOG("SccpData size: " << SccpData.size());
 

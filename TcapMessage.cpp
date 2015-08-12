@@ -34,12 +34,11 @@
 #include <errno.h>
 #include <time.h>
 
-
-
-
 //static const int tcap_id_as_dialogue[] = { 0, 0, 17, 773, 1, 1, 1 };
 //static uint8_t _dial_version1 = 0x80;
 //static BIT_STRING_t dial_version1 = { &_dial_version1, 1, 7 };
+
+
 
 
 static int
@@ -55,6 +54,9 @@ write_out(const void *buffer, size_t size, void *app_key) {
 
     return 0;
 }
+
+
+
 
 
 TcapMessage::TcapMessage() :
@@ -76,28 +78,29 @@ TcapMessage::TcapMessage(ByteStream _incoming) :
     // decode
     LOG("len=" << _incoming.size() ) ;
 
-        if (_incoming.size() > 21) {
 
-			// DialoguePortion / from External -> "Single-Asn.1-Type"
-			if (_incoming[21] == 0xA0) {
-				_incoming[21] = 0x80;
-				LOG ("FIX #2 external -> asn1 type") ;
-			}
-			if (_incoming[22] == 0xA0) {
-				_incoming[22] = 0x80;
-				LOG ("FIX #2 external -> asn1 type") ;
-			}
-
-			if (_incoming[8] == 0x6b) {
-				_incoming[8] = 0x4b;
-				LOG ("APPLICATION 11 (4b) -> UNIVERSAL 11 (6b) FIX #1 applied") ;
-			}
-
-			if (_incoming[9] == 0x6b) {
-				_incoming[9] = 0x4b;
-				LOG ("APPLICATION 11 (4b) -> UNIVERSAL 11 (6b) FIX #1 applied") ;
-        }
-    }
+//        if (_incoming.size() > 21) {
+//
+//			// DialoguePortion / from External -> "Single-Asn.1-Type"
+//			if (_incoming[21] == 0xA0) {
+//				_incoming[21] = 0x80;
+//				LOG ("FIX #2 external -> asn1 type") ;
+//			}
+//			if (_incoming[22] == 0xA0) {
+//				_incoming[22] = 0x80;
+//				LOG ("FIX #2 external -> asn1 type") ;
+//			}
+//
+//			if (_incoming[8] == 0x6b) {
+//				_incoming[8] = 0x4b;
+//				LOG ("APPLICATION 11 (4b) -> UNIVERSAL 11 (6b) FIX #1 applied") ;
+//			}
+//
+//			if (_incoming[9] == 0x6b) {
+//				_incoming[9] = 0x4b;
+//				LOG ("APPLICATION 11 (4b) -> UNIVERSAL 11 (6b) FIX #1 applied") ;
+//        }
+//    }
 
     TCMessage_t *msg = 0;    /* Note this 0! */
     asn_dec_rval_t rval;
@@ -111,7 +114,7 @@ TcapMessage::TcapMessage(ByteStream _incoming) :
 
 
     if (rval.code == RC_OK) {
-    	LOG("ASN.1 Decode ok");
+    	LOG("ASN.1 Decode ok - consumed: " << rval.consumed);
         std::cout << "ASN.1 Decode ok\n";
 
 
@@ -183,8 +186,8 @@ TcapMessage::TcapMessage(ByteStream _incoming) :
 
         return;
     } else {
+    	LOG("ERROR  -  ASN.1 DECODING FAILED: " << rval.code << ", consumed: " << rval.consumed);
         asn_DEF_TCMessage.free_struct(&asn_DEF_TCMessage, msg, 0);
-        LOG("ERROR  -  ASN.1 DECODING FAILED");
         return;
     }
 

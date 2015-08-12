@@ -378,7 +378,7 @@ ByteStream M3UAmessage::commonHeader(unsigned char _msgClass, unsigned char _msg
 *//////////////////////////////////////////////////////////////////////////////////////////
 
 
-	// wot??
+
 
 	unsigned int totLength = _tlvLength + 8;
 

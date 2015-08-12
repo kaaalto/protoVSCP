@@ -27,7 +27,8 @@ SccpMessage::SccpMessage(ByteStream &_incoming) : valChk(VALID)
 
 //	if(_incoming[1] != 0x81 || _incoming[1] != 0x80)
 //	{
-//		LOG("ERROR  -  INVALID SCCP PROTOCOL CLASS :" << _incoming[1]);	// must be 0x80 message handling
+//		unsigned int x = _incoming[1];
+//		LOG("ERROR  -  INVALID SCCP PROTOCOL CLASS :" << x);	// must be 0x80 message handling
 //		valChk = INVALID;								// 0x01 sequenced connectionless or 0x00 basic connectionless
 //		return;
 //	}
@@ -42,9 +43,11 @@ void SccpMessage::decodeSccp()
 	LOG("Decoding SCCP ...");
 	LOG("SCCP msg size: " << m_msg.size());
 
-	unsigned int calledPartyStart = m_msg[2];
-	unsigned int callingPartyStart = m_msg[3];
-	unsigned int dataStart = m_msg[4];
+	unsigned int offset = 2;
+
+	unsigned int calledPartyStart = m_msg[2] + offset;
+	unsigned int callingPartyStart = m_msg[3] + offset;
+	unsigned int dataStart = m_msg[4] + offset;
 
 	LOG("calledPartyStart: " << calledPartyStart << " callingPartyStart: " << callingPartyStart << " dataStart: " << dataStart );
 
@@ -69,20 +72,18 @@ void SccpMessage::decodeSccp()
 		calledPartyAddress.push_back(m_msg[i]);
 	}
 
-	LOG("calledPartyAddress size: " <<  calledPartyAddress.size());
-
-	for(size_t i = callingPartyStart; i >= calledPartyStart && i < dataStart; i++)
+	for(size_t i = callingPartyStart; i < dataStart; i++)
 	{
 		callingPartyAddress.push_back(m_msg[i]);
 	}
 
-	LOG("callingPartyAddress size: " <<  callingPartyAddress.size());
-
-	for (size_t i = dataStart; i >= dataStart && i < m_msg.size(); i++)
+	for (size_t i = dataStart; i < m_msg.size(); i++)
 	{
 		payload.push_back(m_msg[i]);
 	}
 
+	LOG("calledPartyAddress size: " <<  calledPartyAddress.size());
+	LOG("callingPartyAddress size: " <<  callingPartyAddress.size());
 	LOG("payload size: " << payload.size());
 }
 
