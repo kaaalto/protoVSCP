@@ -25,13 +25,6 @@ SccpMessage::SccpMessage(ByteStream &_incoming) : valChk(VALID)
 		return;
 	}
 
-//	if(_incoming[1] != 0x81 || _incoming[1] != 0x80)
-//	{
-//		unsigned int x = _incoming[1];
-//		LOG("ERROR  -  INVALID SCCP PROTOCOL CLASS :" << x);	// must be 0x80 message handling
-//		valChk = INVALID;								// 0x01 sequenced connectionless or 0x00 basic connectionless
-//		return;
-//	}
 
 	LOG("SCCP valid");
 	m_msg = _incoming;
