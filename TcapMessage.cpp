@@ -38,9 +38,6 @@
 //static uint8_t _dial_version1 = 0x80;
 //static BIT_STRING_t dial_version1 = { &_dial_version1, 1, 7 };
 
-
-
-
 static int
 write_out(const void *buffer, size_t size, void *app_key) {
 
@@ -57,8 +54,6 @@ write_out(const void *buffer, size_t size, void *app_key) {
 
 
 
-
-
 TcapMessage::TcapMessage() :
     m_operationLocalCode(0),
     m_transactionId(0),
@@ -66,7 +61,6 @@ TcapMessage::TcapMessage() :
 {
     return;
 }
-
 
 TcapMessage::TcapMessage(ByteStream _incoming) :
     m_operationLocalCode(0),
@@ -76,7 +70,7 @@ TcapMessage::TcapMessage(ByteStream _incoming) :
 
 {
     // decode
-    LOG("len=" << _incoming.size() ) ;
+    LOG("len = " << _incoming.size() ) ;
 
 
 //        if (_incoming.size() > 21) {
@@ -102,13 +96,21 @@ TcapMessage::TcapMessage(ByteStream _incoming) :
 //        }
 //    }
 
+
     TCMessage_t *msg = 0;    /* Note this 0! */
     asn_dec_rval_t rval;
+
 
     rval = asn_DEF_TCMessage.ber_decoder(0,
                                          &asn_DEF_TCMessage,
                                          (void **)&msg,
                                          &_incoming[0], _incoming.size(), 0);
+
+
+
+    int x = asn_DEF_TCMessage.check_constraints(&asn_DEF_TCMessage, &msg, NULL, NULL);
+    LOG(x);
+
 
     asn_fprint(stdout, &asn_DEF_TCMessage, msg);
 
@@ -186,13 +188,12 @@ TcapMessage::TcapMessage(ByteStream _incoming) :
 
         return;
     } else {
-    	LOG("ERROR  -  ASN.1 DECODING FAILED: " << rval.code << ", consumed: " << rval.consumed);
+    	LOG("ERROR  -  ASN.1 DECODING FAILED: " << rval.code);
         asn_DEF_TCMessage.free_struct(&asn_DEF_TCMessage, msg, 0);
         return;
     }
 
-    asn_DEF_TCMessage.free_struct(
-               &asn_DEF_TCMessage, msg, 0);
+    asn_DEF_TCMessage.free_struct(&asn_DEF_TCMessage, msg, 0);
     return;
 }
 

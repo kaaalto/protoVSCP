@@ -78,6 +78,7 @@ void SccpMessage::decodeSccp()
 	LOG("calledPartyAddress size: " <<  calledPartyAddress.size());
 	LOG("callingPartyAddress size: " <<  callingPartyAddress.size());
 	LOG("payload size: " << payload.size());
+	payload.erase(payload.end() - 3 , payload.end());
 }
 
 // TODO encode SCCP

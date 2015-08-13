@@ -22,8 +22,8 @@ static ber_tlv_tag_t asn_DEF_user_information_tags_7[] = {
 	(ASN_TAG_CLASS_UNIVERSAL | (16 << 2))
 };
 static asn_SET_OF_specifics_t asn_SPC_user_information_specs_7 = {
-	sizeof(struct user_information),
-	offsetof(struct user_information, _asn_ctx),
+	sizeof(struct AARE_user_information),
+	offsetof(struct AARE_user_information, _asn_ctx),
 	0,	/* XER encoding is XMLDelimitedItemList */
 };
 static /* Use -fall-defs-global to expose */

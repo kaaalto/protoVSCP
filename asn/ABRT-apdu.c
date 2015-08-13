@@ -4,6 +4,8 @@
  * 	found in "DialoguePDUs.asn"
  */
 
+#include <asn_internal.h>
+
 #include "ABRT-apdu.h"
 
 static asn_TYPE_member_t asn_MBR_user_information_3[] = {
@@ -22,8 +24,8 @@ static ber_tlv_tag_t asn_DEF_user_information_tags_3[] = {
 	(ASN_TAG_CLASS_UNIVERSAL | (16 << 2))
 };
 static asn_SET_OF_specifics_t asn_SPC_user_information_specs_3 = {
-	sizeof(struct user_information),
-	offsetof(struct user_information, _asn_ctx),
+	sizeof(struct ABRT_user_information),
+	offsetof(struct ABRT_user_information, _asn_ctx),
 	0,	/* XER encoding is XMLDelimitedItemList */
 };
 static /* Use -fall-defs-global to expose */
