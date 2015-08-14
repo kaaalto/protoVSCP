@@ -1,9 +1,11 @@
 #include "SccpMessage.hpp"
+#include "Common.h"
 #include <sstream>
 #include <iostream>
 #include <iomanip>
 #include <fstream>
 #include <stdlib.h>
+
 
 
 #define LOG(x) \
@@ -36,11 +38,11 @@ void SccpMessage::decodeSccp()
 	LOG("Decoding SCCP ...");
 	LOG("SCCP msg size: " << m_msg.size());
 
-	unsigned int offset = 2;
 
-	unsigned int calledPartyStart = m_msg[2] + offset;
-	unsigned int callingPartyStart = m_msg[3] + offset;
-	unsigned int dataStart = m_msg[4] + offset;
+
+	unsigned int calledPartyStart = m_msg[2] + 3 ;
+	unsigned int callingPartyStart = m_msg[3] + 4 ;
+	unsigned int dataStart = m_msg[4] + 5;
 
 	LOG("calledPartyStart: " << calledPartyStart << " callingPartyStart: " << callingPartyStart << " dataStart: " << dataStart );
 
@@ -78,7 +80,14 @@ void SccpMessage::decodeSccp()
 	LOG("calledPartyAddress size: " <<  calledPartyAddress.size());
 	LOG("callingPartyAddress size: " <<  callingPartyAddress.size());
 	LOG("payload size: " << payload.size());
-	payload.erase(payload.end() - 3 , payload.end());
+//	payload.erase(payload.end() - 3 , payload.end());
+
+	LOG("calledPartyAddress: " << calledPartyAddress);
+	LOG("callingPartyAddress: " << callingPartyAddress);
+	LOG("SccpPayload: " << payload);
+
+
+
 }
 
 // TODO encode SCCP

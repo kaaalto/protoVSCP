@@ -73,7 +73,7 @@ TcapMessage::TcapMessage(ByteStream _incoming) :
     LOG("len = " << _incoming.size() ) ;
 
 
-    LOG("incoming: " << _incoming);
+
 
 //        if (_incoming.size() > 21) {
 //
@@ -107,12 +107,6 @@ TcapMessage::TcapMessage(ByteStream _incoming) :
                                          &asn_DEF_TCMessage,
                                          (void **)&msg,
                                          &_incoming[0], _incoming.size(), 0);
-
-
-
-    int x = asn_DEF_TCMessage.check_constraints(&asn_DEF_TCMessage, &msg, NULL, NULL);
-    LOG(x);
-
 
     asn_fprint(stdout, &asn_DEF_TCMessage, msg);
 
