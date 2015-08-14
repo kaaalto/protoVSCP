@@ -73,6 +73,8 @@ TcapMessage::TcapMessage(ByteStream _incoming) :
     LOG("len = " << _incoming.size() ) ;
 
 
+    LOG("incoming: " << _incoming);
+
 //        if (_incoming.size() > 21) {
 //
 //			// DialoguePortion / from External -> "Single-Asn.1-Type"
