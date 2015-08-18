@@ -125,9 +125,16 @@ int InapMessage::decodeInitialDP(const ByteStream &_msg)
 //    LOG("stringstream " << str_cpn);
 
 		FILE *fp;
-		fp = fopen("testi.txt", "w+");
-		asn_fprint(fp, &asn_DEF_InitialDPArg, msg);
+		fp = fopen("data.txt", "w");
+		if(fp == NULL) perror("Error opening file");
+		else
+		{
+			asn_fprint(fp, &asn_DEF_InitialDPArg, msg);
+		}
 		fclose(fp);
+
+		parseNum();
+
 
 
 //	LOG("calledPartyNumber: " << ss);
@@ -139,30 +146,37 @@ int InapMessage::decodeInitialDP(const ByteStream &_msg)
 }
 
 
-void InapMessage::parseNum(istream is)
+void InapMessage::parseNum()
 {
-	string line;
+	std::string line;
+	std::string numl = "calledPartyNumber:";
+	std::ifstream is("data.txt");
 
-	while(std::getline(is,line))
+	if(is.is_open())
 	{
 		std::string tmp;
-		for (int i = 0; i < line.length(); i++)
+		while (is.good())
 		{
-			if(line[i] == ' ' && tmp.size() == 0)
-			{
-			}
-			else
-			{
-				tmp += line[i];
-			}
-		}
 
-		if (tmp == "calledPartyNumber: ")
-		{
-			str_cpn = tmp;
+			getline(is, tmp);
+			if(tmp.find(numl) != std::string::npos )
+			{
+				LOG("found line");
+				line = tmp;
+			}
+
 		}
+	} else {
+		LOG("FILE NOT OPEN");
+		return;
 	}
-	LOG("str_cpn: " << str_cpn);
+	 if( remove( "data.txt" ) != 0 )
+	 {
+	    LOG( "Error deleting file" );
+	 }
+	 else
+	    LOG( "File successfully deleted" );
+	LOG("line: " << line);
 }
 
 string InapMessage::getCalledPartyNumber()

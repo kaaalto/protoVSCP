@@ -15,6 +15,7 @@ class InapMessage
 {
 private:
 	string str_cpn;
+	void parseNum();
 
 public:
 	InapMessage();
@@ -25,7 +26,7 @@ public:
 	int decodeInitialDP(const ByteStream &);
 	string getCalledPartyNumber();
 
-	void parseNum(istream );
+
 
 
 };
