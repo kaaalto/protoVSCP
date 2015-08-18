@@ -129,12 +129,13 @@ int InapMessage::decodeInitialDP(const ByteStream &_msg)
 void InapMessage::parseNum()
 {
 	std::string line;
+	std::string tmp;
 	std::string numl = "calledPartyNumber:";
 	std::ifstream is("data.txt");
 
 	if(is.is_open())
 	{
-		std::string tmp;
+
 		while (is.good())
 		{
 
@@ -147,14 +148,6 @@ void InapMessage::parseNum()
 
 				line = tmp;
 
-//				while((pos = tmp.find(delim)) != std::string::npos)
-//				{
-//					line = tmp.substr(prev_pos, pos-prev_pos);
-////					line.erase(0, pos + delim.length());
-////					line = tmp;
-//					prev_pos = ++pos;
-//				}
-//				line = tmp.substr(prev_pos, pos-prev_pos);
 			}else LOG("CALLEDPARTYADDRESS NOT FOUND");
 		}
 
@@ -162,7 +155,9 @@ void InapMessage::parseNum()
 		LOG("FILE NOT OPEN");
 		return;
 	}
-	 if( remove( "data.txt" ) != 0 )
+
+
+	 if( remove( "data.txt" ) != 0 )				// ei mee tänne
 	 {
 	    LOG( "Error deleting file" );
 	 }
@@ -170,11 +165,16 @@ void InapMessage::parseNum()
 	    LOG( "File successfully deleted" );
 	 }
 
-	line.erase(std::remove_if(line.begin(), line.end(), (int(*)(int))isspace), line.end());	// erase whitespaces
-	LOG("line: " << line);
+	 if(!line.empty())
+	 {
+		line.erase(std::remove_if(line.begin(), line.end(), (int(*)(int))isspace), line.end());
 
+		size_t pos = line.find(":") + 1;
+		line = line.substr(pos);
+		LOG("line: " << line);
+	 }
 
-
+	 return;
 }
 
 string InapMessage::getCalledPartyNumber()
