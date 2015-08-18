@@ -1,0 +1,5 @@
+InitialDPArg ::= {
+    serviceKey: 100
+    calledPartyNumber: 81 90 20 46 97 12 02
+    callingPartyNumber: 03 13 62 74 99 12
+}

@@ -15,8 +15,7 @@
 
 
 
-#define LOG(x) \
-    std::cout << __FILE__ << "::" << __FUNCTION__ << ":" << __LINE__ << ": " << x << std::endl;
+
 
 int main (int argc, char *argv[])
 {
@@ -125,8 +124,9 @@ int main (int argc, char *argv[])
     			LOG("localCode: " << localCode << " otid: " << otid << " invokeID: " << invokeID);
 
     			// INAP
-    			//	InapMessage inapMsg(localCode, TcapParameterData);
-    			//	const char _calledPartyNum = inapMsg.getCalledPartyNumber();
+    			InapMessage inapMsg(localCode, TcapParameterData);
+    			string _calledPartyNum = inapMsg.getCalledPartyNumber();
+    			LOG("CPN: " << _calledPartyNum);
 
     			// TODO searchDB(_calledPartyNum);
 

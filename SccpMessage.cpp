@@ -7,10 +7,6 @@
 #include <stdlib.h>
 
 
-
-#define LOG(x) \
-    std::cout << __FILE__ << "::" << __FUNCTION__ << ":" << __LINE__ << ": " << x << std::endl;
-
 SccpMessage::SccpMessage() {
 	return;
 }

@@ -471,7 +471,7 @@ void M3UAmessage::decodePayload()
  *		   User Protocol Data: variable-length octet string
  */
 
-			dataLen -= 16;		// ignore & skip 16 bytes(tag, length and useless parameters)
+			dataLen -= 16;		// ignore & skip 16 bytes(useless parameters)
 			i += 16;			//
 
 			LOG("datalength: " << dataLen << " from: " << i);

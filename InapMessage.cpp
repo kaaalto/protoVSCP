@@ -1,15 +1,15 @@
-
-#define LOG(x) \
-    std::cout << __FILE__ << "::" << __FUNCTION__ << ":" << __LINE__ << ": " << x << std::endl;
-
 #include "InapMessage.hpp"
-
 
 #include "ConnectArg.h"
 #include "InitialDPArg.h"
 #include "ReleaseCallArg.h"
+#include "Common.h"
 
 #include <iostream>
+#include <sstream>
+
+#include <fstream>
+
 
 
 /*
@@ -29,7 +29,6 @@
 //
 //    return 0;
 //}
-
 
 InapMessage::InapMessage()
 {
@@ -75,7 +74,7 @@ InapMessage::InapMessage(int _localCode, const ByteStream &_incoming)
 
 int InapMessage::decodeInitialDP(const ByteStream &_msg)
 {
-	LOG("decoding InitialDPArg, msg size: " << _msg.size());
+	LOG("decoding InitialDPArg");
 
 	InitialDPArg_t *msg = 0;
 	asn_dec_rval_t rval;
@@ -104,43 +103,75 @@ int InapMessage::decodeInitialDP(const ByteStream &_msg)
     if(!msg->calledPartyNumber)
     {
     	LOG("calledPartyNumber not found");
+    	asn_DEF_InitialDPArg.free_struct(&asn_DEF_InitialDPArg, msg, 0);
     	return -1;
     }
  //   m_calledPartyNumber == msg->calledPartyNumber;
 
+  //  str_cpn = msg->calledPartyNumber->buf;
+  //  str_cpn = reinterpret_cast<const unsigned char*>(msg->calledPartyNumber->buf);
 
-    	/*
-	 * This function clears the previous value of the OCTET STRING (if any)
-	 * and then allocates a new memory with the specified content (str/size).
-	 * If size = -1, the size of the original string will be determined
-	 * using strlen(str).
-	 * If str equals to NULL, the function will silently clear the
-	 * current contents of the OCTET STRING.
-	 * Returns 0 if it was possible to perform operation, -1 otherwise.
-	 *
-	 * int OCTET_STRING_fromBuf(OCTET_STRING_t *s, const char *str, int size);
-	 */
+//    (asn_struct_print_f)(
+//    		struct asn_TYPE_descriptor_s *type_descriptor,
+//    		const void *struct_ptr,
+//    		int level,	/* Indentation level */
+//    		asn_app_consume_bytes_f *callback, void *app_key
 
-	int retval = OCTET_STRING_fromBuf(msg->calledPartyNumber, str_cpn, -1);
 
-	if (retval == -1)
-	{
-		LOG("ERROR  -  OCTET2char conversion failed");
-		return 0;
-	}
+//    std::stringstream ss;
+ //   asn_DEF_InitialDPArg.print_struct(&asn_DEF_InitialDPArg, msg, 0, 0, (void*)&ss);
+//    ss << xer_fprint(stdout, &asn_DEF_InitialDPArg, msg);
+//    str_cpn = ss.str();
+//    LOG("stringstream " << str_cpn);
 
-	LOG("OCTET2char conversion successful, calledPartyNumber: " << str_cpn);
+		FILE *fp;
+		fp = fopen("testi.txt", "w+");
+		asn_fprint(fp, &asn_DEF_InitialDPArg, msg);
+		fclose(fp);
+
+
+//	LOG("calledPartyNumber: " << ss);
+	asn_DEF_InitialDPArg.free_struct(&asn_DEF_InitialDPArg, msg, 0);
 
 
 
    return 0;
 }
 
-const char InapMessage::getCalledPartyNumber()
+
+void InapMessage::parseNum(istream is)
+{
+	string line;
+
+	while(std::getline(is,line))
+	{
+		std::string tmp;
+		for (int i = 0; i < line.length(); i++)
+		{
+			if(line[i] == ' ' && tmp.size() == 0)
+			{
+			}
+			else
+			{
+				tmp += line[i];
+			}
+		}
+
+		if (tmp == "calledPartyNumber: ")
+		{
+			str_cpn = tmp;
+		}
+	}
+	LOG("str_cpn: " << str_cpn);
+}
+
+string InapMessage::getCalledPartyNumber()
 {
 	LOG("getCalledPartyNumber()");
-	return *str_cpn;
+	return str_cpn;
 }
+
+
 
 // TODO InapMessage::encodeConnect (...)
 

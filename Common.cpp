@@ -19,6 +19,9 @@
 
 #include <iomanip>
 #include <iostream>
+#include <sstream>
+
+
 
 std::ostream& operator<<(std::ostream& os, const ByteStream& b)
 {
@@ -37,3 +40,7 @@ std::ostream& operator<<(std::ostream& os, const ByteStream& b)
 
     return os;
 }
+
+
+
+

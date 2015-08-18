@@ -19,7 +19,6 @@
 #define __TCAP_MESSAGE_HPP 1
 
 #include "Common.h"
-
 #include "M3UAmessage.hpp"
 
 class TcapMessage {

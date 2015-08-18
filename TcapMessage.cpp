@@ -157,7 +157,7 @@ TcapMessage::TcapMessage(ByteStream _incoming) :
                     m_operationLocalCode = component->choice.invoke.opCode.choice.localValue;
                 }
 
-                if (m_operationLocalCode && component->choice.invoke.parameter)
+                if (m_operationLocalCode == 0 && component->choice.invoke.parameter)
                 {
                     std::cout << "   component parameter size: "
                               << component->choice.invoke.parameter->size << "\n";
