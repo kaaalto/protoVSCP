@@ -7,7 +7,7 @@
 
 #include <iostream>
 #include <sstream>
-
+#include <algorithm>
 #include <fstream>
 
 
@@ -106,23 +106,6 @@ int InapMessage::decodeInitialDP(const ByteStream &_msg)
     	asn_DEF_InitialDPArg.free_struct(&asn_DEF_InitialDPArg, msg, 0);
     	return -1;
     }
- //   m_calledPartyNumber == msg->calledPartyNumber;
-
-  //  str_cpn = msg->calledPartyNumber->buf;
-  //  str_cpn = reinterpret_cast<const unsigned char*>(msg->calledPartyNumber->buf);
-
-//    (asn_struct_print_f)(
-//    		struct asn_TYPE_descriptor_s *type_descriptor,
-//    		const void *struct_ptr,
-//    		int level,	/* Indentation level */
-//    		asn_app_consume_bytes_f *callback, void *app_key
-
-
-//    std::stringstream ss;
- //   asn_DEF_InitialDPArg.print_struct(&asn_DEF_InitialDPArg, msg, 0, 0, (void*)&ss);
-//    ss << xer_fprint(stdout, &asn_DEF_InitialDPArg, msg);
-//    str_cpn = ss.str();
-//    LOG("stringstream " << str_cpn);
 
 		FILE *fp;
 		fp = fopen("data.txt", "w");
@@ -133,12 +116,9 @@ int InapMessage::decodeInitialDP(const ByteStream &_msg)
 		}
 		fclose(fp);
 
+		asn_DEF_InitialDPArg.free_struct(&asn_DEF_InitialDPArg, msg, 0);
+
 		parseNum();
-
-
-
-//	LOG("calledPartyNumber: " << ss);
-	asn_DEF_InitialDPArg.free_struct(&asn_DEF_InitialDPArg, msg, 0);
 
 
 
@@ -162,10 +142,22 @@ void InapMessage::parseNum()
 			if(tmp.find(numl) != std::string::npos )
 			{
 				LOG("found line");
-				line = tmp;
-			}
+				size_t pos = 0, prev_pos = 0;
+				std::string delim = ":";
 
+				line = tmp;
+
+//				while((pos = tmp.find(delim)) != std::string::npos)
+//				{
+//					line = tmp.substr(prev_pos, pos-prev_pos);
+////					line.erase(0, pos + delim.length());
+////					line = tmp;
+//					prev_pos = ++pos;
+//				}
+//				line = tmp.substr(prev_pos, pos-prev_pos);
+			}else LOG("CALLEDPARTYADDRESS NOT FOUND");
 		}
+
 	} else {
 		LOG("FILE NOT OPEN");
 		return;
@@ -174,9 +166,15 @@ void InapMessage::parseNum()
 	 {
 	    LOG( "Error deleting file" );
 	 }
-	 else
+	 else{
 	    LOG( "File successfully deleted" );
+	 }
+
+	line.erase(std::remove_if(line.begin(), line.end(), (int(*)(int))isspace), line.end());	// erase whitespaces
 	LOG("line: " << line);
+
+
+
 }
 
 string InapMessage::getCalledPartyNumber()
