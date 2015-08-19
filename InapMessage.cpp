@@ -72,7 +72,7 @@ InapMessage::InapMessage(int _localCode, const ByteStream &_incoming)
 
 
 
-int InapMessage::decodeInitialDP(const ByteStream &_msg)
+void InapMessage::decodeInitialDP(const ByteStream &_msg)
 {
 	LOG("decoding InitialDPArg");
 
@@ -93,7 +93,7 @@ int InapMessage::decodeInitialDP(const ByteStream &_msg)
     	        /* Free partially decoded rect */
     	        asn_DEF_InitialDPArg.free_struct(
     	            &asn_DEF_InitialDPArg, msg, 0);
-    	        return -1;
+    	        return;
     } else {
     	LOG("InitialDPArg decoding successful");
     }
@@ -104,7 +104,7 @@ int InapMessage::decodeInitialDP(const ByteStream &_msg)
     {
     	LOG("calledPartyNumber not found");
     	asn_DEF_InitialDPArg.free_struct(&asn_DEF_InitialDPArg, msg, 0);
-    	return -1;
+    	return;
     }
 
 		FILE *fp;
@@ -122,7 +122,7 @@ int InapMessage::decodeInitialDP(const ByteStream &_msg)
 
 
 
-   return 0;
+   return;
 }
 
 
@@ -132,23 +132,31 @@ void InapMessage::parseNum()
 	std::string tmp;
 	std::string numl = "calledPartyNumber:";
 	std::ifstream is("data.txt");
+	bool isOdd = false;
 
 	if(is.is_open())
 	{
-
 		while (is.good())
 		{
-
 			getline(is, tmp);
 			if(tmp.find(numl) != std::string::npos )
 			{
 				LOG("found line");
-				size_t pos = 0, prev_pos = 0;
-				std::string delim = ":";
-
 				line = tmp;
 
-			}else LOG("CALLEDPARTYADDRESS NOT FOUND");
+//				size_t pos = 0, prev_pos = 0;
+//				std::string delim = ":";
+
+//				while((pos = tmp.find(delim)) != std::string::npos)
+//				{
+//					line = tmp.substr(prev_pos, pos-prev_pos);
+////					line.erase(0, pos + delim.length());
+////					line = tmp;
+//					prev_pos = ++pos;
+//				}
+//				line = tmp.substr(prev_pos, pos-prev_pos);
+
+			}
 		}
 
 	} else {
@@ -157,7 +165,7 @@ void InapMessage::parseNum()
 	}
 
 
-	 if( remove( "data.txt" ) != 0 )				// ei mee tänne
+	 if( remove( "data.txt" ) != 0 )
 	 {
 	    LOG( "Error deleting file" );
 	 }
@@ -167,11 +175,33 @@ void InapMessage::parseNum()
 
 	 if(!line.empty())
 	 {
-		line.erase(std::remove_if(line.begin(), line.end(), (int(*)(int))isspace), line.end());
-
 		size_t pos = line.find(":") + 1;
+
+		rawNum = line;
+
+		line.erase(std::remove_if(line.begin(), line.end(), (int(*)(int))isspace), line.end());
+		if(line[pos] >= 8) isOdd = true;
 		line = line.substr(pos);
+
 		LOG("line: " << line);
+
+		if (isOdd) {
+
+			std::swap(line[1], line[0]);
+			std::swap(line[3], line[2]);
+			std::swap(line[5], line[4]);
+			std::swap(line[7], line[6]);
+			std::swap(line[8], line[9]);
+			line.erase(line.size() - 1);
+
+
+		}else {
+		LOG("not odd");
+		}
+
+		strCpn = line;
+		LOG("strCpn: " << strCpn);
+
 	 }
 
 	 return;
@@ -180,7 +210,8 @@ void InapMessage::parseNum()
 string InapMessage::getCalledPartyNumber()
 {
 	LOG("getCalledPartyNumber()");
-	return str_cpn;
+//	std::string str( str_cpn->data() );
+	return strCpn;
 }
 
 

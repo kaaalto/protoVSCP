@@ -8,22 +8,22 @@
 #include "OCTET_STRING.h"
 #include <iostream>
 #include <sstream>
-
+#include <vector>
 #include <fstream>
 
 class InapMessage
 {
 private:
-	string str_cpn;
+	std::string strCpn;
 	void parseNum();
+
+	std::string rawNum;
 
 public:
 	InapMessage();
 	InapMessage(int _localCode, const ByteStream &);
 
-
-
-	int decodeInitialDP(const ByteStream &);
+	void decodeInitialDP(const ByteStream &);
 	string getCalledPartyNumber();
 
 
