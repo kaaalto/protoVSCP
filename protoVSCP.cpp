@@ -125,8 +125,8 @@ int main (int argc, char *argv[])
 
     			// INAP
     			InapMessage inapMsg(localCode, TcapParameterData);
-    	//		string _calledPartyNum = inapMsg.getCalledPartyNumber();
-    	//		LOG("CPN: " << _calledPartyNum);
+    			string _calledPartyNum = inapMsg.getCalledPartyNumber();
+    			LOG("CPN: " << _calledPartyNum);
 
     			// TODO searchDB(_calledPartyNum);
 

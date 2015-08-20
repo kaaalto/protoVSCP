@@ -13,13 +13,12 @@
 
 {"nums":[
     {
-      "origNum" : "0123456789",
-      "transferredNum" : "1Dxxy0123456789",
+      "origNum" : "123456789",
+      "transferredNum" : "1Dxxy561234987",
     },
     {
-      "origNum" : "9876543210",
-      "transferredNum" : 1Dxxy9876543210,
-
+      "origNum" : "987654321",
+      "transferredNum" : 1Dxxy123456789,
     },
   ]
 }
@@ -27,7 +26,7 @@
 
 JsonFile::JsonFile()
 {
-string file = "numsi.json";
+std::string file = "numsi.json";
 Json::Reader reader;
 Json::Value root;
 
@@ -39,10 +38,10 @@ bool parsedSuccess = reader.parse(file,
  {
    // Report failures and their locations
    // in the document.
-   cout<<"Failed to parse JSON"<<endl
+   cout<<"Failed to parse JSON"<< std::endl
        <<reader.getFormatedErrorMessages()
        <<endl;
-   return 1;
+   return ;
  }
 
 
@@ -50,10 +49,11 @@ bool parsedSuccess = reader.parse(file,
 
 unsigned char JsonFile::find(unsigned char& origNum)
 {
+	Json::Value root;
+
 	const Json::Value nums = root["nums"];
 
 	std::string sOrigNum(reinterpret_cast<char*>(origNum));			//unsigned char to string
-
 
 	for(Json::ValueConstIterator it = nums.begin(); it != nums.end() ; ++it )
 	{
@@ -61,7 +61,7 @@ unsigned char JsonFile::find(unsigned char& origNum)
 
 		if (num["origNum"].asString == sOrigNum)
 		{
-			String tmp = num["transferredNum"];
+			std::string tmp = num["transferredNum"];
 			unsigned char *val = new unsigned char[tmp.length()+1];
 			strcpy((char *)val,tmp.c_str());						// string to unsigned char
 
@@ -69,7 +69,7 @@ unsigned char JsonFile::find(unsigned char& origNum)
 		}
 
 	}
-	return -1;
+	return ;
 }
 
 

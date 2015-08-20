@@ -9,7 +9,6 @@
 #define JSONFILE_HPP_
 
 
-
 class JsonFile
 {
 

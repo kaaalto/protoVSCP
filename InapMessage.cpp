@@ -115,12 +115,8 @@ void InapMessage::decodeInitialDP(const ByteStream &_msg)
 			asn_fprint(fp, &asn_DEF_InitialDPArg, msg);
 		}
 		fclose(fp);
-
 		asn_DEF_InitialDPArg.free_struct(&asn_DEF_InitialDPArg, msg, 0);
-
 		parseNum();
-
-
 
    return;
 }
@@ -129,8 +125,6 @@ void InapMessage::decodeInitialDP(const ByteStream &_msg)
 void InapMessage::parseNum()
 {
 	std::string line;
-	std::string tmp;
-	std::string numl = "calledPartyNumber:";
 	std::ifstream is("data.txt");
 	bool isOdd = false;
 
@@ -138,24 +132,14 @@ void InapMessage::parseNum()
 	{
 		while (is.good())
 		{
+			std::string numl = "calledPartyNumber:";
+			std::string tmp;
+
 			getline(is, tmp);
 			if(tmp.find(numl) != std::string::npos )
 			{
-				LOG("found line");
+				LOG("CalledPartyNumber found");
 				line = tmp;
-
-//				size_t pos = 0, prev_pos = 0;
-//				std::string delim = ":";
-
-//				while((pos = tmp.find(delim)) != std::string::npos)
-//				{
-//					line = tmp.substr(prev_pos, pos-prev_pos);
-////					line.erase(0, pos + delim.length());
-////					line = tmp;
-//					prev_pos = ++pos;
-//				}
-//				line = tmp.substr(prev_pos, pos-prev_pos);
-
 			}
 		}
 
@@ -175,46 +159,38 @@ void InapMessage::parseNum()
 
 	 if(!line.empty())
 	 {
-		size_t pos = line.find(":") + 1;
-
 		rawNum = line;
+		size_t pos = (line.find(":") + 2);
+
+		if(line[pos] >= 8) isOdd = true;
 
 		line.erase(std::remove_if(line.begin(), line.end(), (int(*)(int))isspace), line.end());
-		if(line[pos] >= 8) isOdd = true;
-		line = line.substr(pos);
 
-		LOG("line: " << line);
+		line = line.substr(pos - 1);
 
-		if (isOdd) {
-
+		for(unsigned int i = 0; i < line.size(); i++)
+		{
 			std::swap(line[1], line[0]);
-			std::swap(line[3], line[2]);
-			std::swap(line[5], line[4]);
-			std::swap(line[7], line[6]);
-			std::swap(line[8], line[9]);
-			line.erase(line.size() - 1);
-
-
-		}else {
-		LOG("not odd");
+			if(i % 2 == 0)
+			{
+				std::swap(line[i+1], line[i]);
+			}
 		}
+		if((isOdd = true)) line.erase(line.size() - 1);
 
 		strCpn = line;
-		LOG("strCpn: " << strCpn);
 
+	 } else{
+		 LOG("ERROR  -  CALLEDPARTYNUMBER NOT FOUND");
 	 }
-
 	 return;
 }
 
 string InapMessage::getCalledPartyNumber()
 {
 	LOG("getCalledPartyNumber()");
-//	std::string str( str_cpn->data() );
 	return strCpn;
 }
-
-
 
 // TODO InapMessage::encodeConnect (...)
 

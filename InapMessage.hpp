@@ -22,7 +22,6 @@ private:
 public:
 	InapMessage();
 	InapMessage(int _localCode, const ByteStream &);
-
 	void decodeInitialDP(const ByteStream &);
 	string getCalledPartyNumber();
 
