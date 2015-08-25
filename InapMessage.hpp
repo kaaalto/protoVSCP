@@ -24,6 +24,7 @@ public:
 	InapMessage(int _localCode, const ByteStream &);
 	void decodeInitialDP(const ByteStream &);
 	string getCalledPartyNumber();
+	ByteStream encodeConnect(std::string);
 
 
 

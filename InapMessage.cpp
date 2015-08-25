@@ -3,6 +3,7 @@
 #include "ConnectArg.h"
 #include "InitialDPArg.h"
 #include "ReleaseCallArg.h"
+#include "CutAndPaste.h"
 #include "Common.h"
 
 #include <iostream>
@@ -17,18 +18,18 @@
  * encoded output into some FILE stream.
  * http://lionet.info/asn1c/asn1c-usage.html
  */
-//static int
-//write_out(const void *buffer, size_t size, void *app_key) {
-//
-//    ByteStream *tmpbuf = static_cast<ByteStream*>(app_key);
-//
-//    for (unsigned int i=0; i<size; i++) {
-//        unsigned char *byte = (unsigned char*) buffer;
-//        tmpbuf->push_back(*(byte+i));
-//    }
-//
-//    return 0;
-//}
+static int
+write_out(const void *buffer, size_t size, void *app_key) {
+
+    ByteStream *tmpbuf = static_cast<ByteStream*>(app_key);
+
+    for (unsigned int i=0; i<size; i++) {
+        unsigned char *byte = (unsigned char*) buffer;
+        tmpbuf->push_back(*(byte+i));
+    }
+
+    return 0;
+}
 
 InapMessage::InapMessage()
 {
@@ -192,7 +193,33 @@ string InapMessage::getCalledPartyNumber()
 	return strCpn;
 }
 
-// TODO InapMessage::encodeConnect (...)
+ByteStream InapMessage::encodeConnect (std::string addr)
+{
+	ByteStream bs;
+	ConnectArg_t *inapMsg;
+	asn_dec_rval_t ec;
+
+
+
+
+
+    ec = der_encode(&asn_DEF_ConnectArg,
+                    inapMsg, write_out, &bs);
+
+    LOG ("der_encode.encoded=" << (int) ec.encoded );
+    asn_fprint(stdout, &asn_DEF_MT_ForwardSM_Arg, mapMsg);
+
+
+
+
+
+		//cutAndPaste: 0
+
+	return bs;
+}
+
+
+
 
 
 // TODO InapMessage::encodeRelease(...)

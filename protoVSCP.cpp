@@ -5,6 +5,7 @@
 #include "TcapMessage.hpp"
 #include "InapMessage.hpp"
 #include "SccpMessage.hpp"
+#include "Database.hpp"
 
 
 #include "TCMessage.h"
@@ -125,10 +126,21 @@ int main (int argc, char *argv[])
 
     			// INAP
     			InapMessage inapMsg(localCode, TcapParameterData);
-    			string _calledPartyNum = inapMsg.getCalledPartyNumber();
+    			std::string _calledPartyNum = inapMsg.getCalledPartyNumber();
     			LOG("CPN: " << _calledPartyNum);
 
-    			// TODO searchDB(_calledPartyNum);
+
+
+    			if(!_calledPartyNum.empty()){
+    				// SQL DATABASE
+    				Database db;
+
+    				std::string newNum = db.find(_calledPartyNum);
+    				db.close();
+    				LOG("newNum: " << newNum);
+
+
+    			}
 
 
     			}
