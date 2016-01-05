@@ -5,7 +5,6 @@
 
 Database::Database()
 {
-	open();
 }
 
 Database::~Database()
@@ -19,11 +18,12 @@ void Database::open()
 
    rc = sqlite3_open(dbName, &db);
 
-   if( rc ){
-      fprintf(stderr, "Can't open database: %s\n", sqlite3_errmsg(db));
-      exit(0);
+   if( rc == SQLITE_OK ){
+	   LOG("Database opened successfully\n");
+     return;
    }else{
-      fprintf(stderr, "Opened database successfully\n");
+      LOG("Can't open database: " << sqlite3_errmsg(db));
+      return;
    }
 }
 
@@ -31,8 +31,8 @@ std::string Database::find(std::string fNum)
 {
 	sqlite3_stmt *stmt;
 	std::string sql = "SELECT * FROM nums WHERE orignum = '" + fNum + "';" ;
-//	const unsigned char * transNum;
 	std::string transNum;
+	std::string noNum = "3BD"; 		// number not found
 
 	LOG("SQL QUERY: " << sql);
 
@@ -47,6 +47,11 @@ std::string Database::find(std::string fNum)
 			{
 				transNum = std::string(reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1)));
 			}
+		else if(res == SQLITE_DONE)
+		{
+			transNum = noNum;							// number not in database
+			LOG("NUMBER NO " << retval );
+		}
 
 		}else{
 			LOG("SQL QUERY ERROR " << retval );
@@ -61,6 +66,7 @@ std::string Database::find(std::string fNum)
 
 void Database::close()
 {
+	LOG("Database closed");
 	sqlite3_close(db);
 }
 

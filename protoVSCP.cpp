@@ -1,5 +1,6 @@
 
 
+#include "Common.h"
 #include "SctpConnection.hpp"
 #include "M3UAmessage.hpp"
 #include "TcapMessage.hpp"
@@ -13,9 +14,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
-
-
-
 
 
 int main (int argc, char *argv[])
@@ -110,8 +108,6 @@ int main (int argc, char *argv[])
     				SccpData = incomingSccp.getData();
     				LOG("SccpData size: " << SccpData.size());
 
-
-
     			// TCAP
 
     			TcapMessage incomingTcap(SccpData);
@@ -122,6 +118,7 @@ int main (int argc, char *argv[])
     			int invokeID 					= incomingTcap.invokeId();
     			ByteStream TcapParameterData 	= incomingTcap.parameterData();
 
+
     			LOG("localCode: " << localCode << " otid: " << otid << " invokeID: " << invokeID);
 
     			// INAP
@@ -130,17 +127,25 @@ int main (int argc, char *argv[])
     			LOG("CPN: " << _calledPartyNum);
 
 
+    			ByteStream inapPayload;
 
-    			if(!_calledPartyNum.empty()){
+    			if(_calledPartyNum.empty() != true){
     				// SQL DATABASE
     				Database db;
 
+    				db.open();
     				std::string newNum = db.find(_calledPartyNum);
-    				db.close();
-    				LOG("newNum: " << newNum);
+					db.close();
+
+					//ByteStream num(newNum.begin(), newNum.end());
+
+					if(newNum.empty() != true){
+						inapPayload = inapMsg.encodeConnect(newNum);
+    			}
 
 
     			}
+
 
 
     			}

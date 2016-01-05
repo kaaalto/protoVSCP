@@ -18,8 +18,8 @@
 
 //#include "MapMessage.hpp"
 
-#define LOG(x) \
-    std::cout << __FILE__ << "::" << __FUNCTION__ << ":" << __LINE__ << ": " << x << std::endl;
+//#define LOG(x) \
+//    std::cout << __FILE__ << "::" << __FUNCTION__ << ":" << __LINE__ << ": " << x << std::endl;
 
 #include "TcapMessage.hpp"
 

@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <fstream>
 
+#include <typeinfo>
 
 
 /*
@@ -197,25 +198,55 @@ ByteStream InapMessage::encodeConnect (std::string addr)
 {
 	ByteStream bs;
 	ConnectArg_t *inapMsg;
-	asn_dec_rval_t ec;
+	asn_enc_rval_t ec;
+	CalledPartyNumber_t *oct ;
+	DestinationRoutingAddress_t *rda ;
+	CutAndPaste_t *cap = 0;
+
+	LOG("Encoding ConnectArg...");
+	LOG("addr " << addr);
+
+	inapMsg = (ConnectArg_t*) calloc(1, sizeof(ConnectArg_t));
+
+	oct = (CalledPartyNumber_t*) calloc(1, sizeof (*oct));
+	rda = (DestinationRoutingAddress_t *) calloc(1, sizeof(*rda));
+	assert(oct);
+	assert(rda);
+
+	OCTET_STRING_fromString(oct, addr.c_str());
+
+	LOG("typeid: " << typeid(oct).name());
+
+//	inapMsg->destinationRoutingAddress.list.free(oct);
+
+//	oct->buf = (uint8_t*) calloc(1, addr.size());
+//	oct->size = addr.size();
+	LOG("oct size " << sizeof(oct) << " " << oct);
 
 
+//	ASN_SEQUENCE_ADD(&rda->list, oct);
+//	inapMsg->destinationRoutingAddress = rda;
 
+	ASN_SEQUENCE_ADD(&inapMsg->destinationRoutingAddress.list, oct);
+//	inapMsg->destinationRoutingAddress.list.array = &oct;
+
+	inapMsg->cutAndPaste = cap;
 
 
     ec = der_encode(&asn_DEF_ConnectArg,
                     inapMsg, write_out, &bs);
 
-    LOG ("der_encode.encoded=" << (int) ec.encoded );
-    asn_fprint(stdout, &asn_DEF_MT_ForwardSM_Arg, mapMsg);
+    if(ec.encoded == -1)
+    {
+    	LOG("ERROR - ENCODING FAILED: " << ec.failed_type);
+    }
+    else{
+    	LOG ("der_encode.encoded=" << (int) ec.encoded );
+    }
 
+    asn_fprint(stdout, &asn_DEF_ConnectArg, inapMsg);
+    return bs;
 
-
-
-
-		//cutAndPaste: 0
-
-	return bs;
 }
 
 

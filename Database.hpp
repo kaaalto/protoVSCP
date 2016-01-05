@@ -19,6 +19,7 @@ private:
 	sqlite3 *db;
 
 
+
 public:
 	Database();
 	~Database();
