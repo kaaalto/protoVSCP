@@ -210,28 +210,18 @@ ByteStream InapMessage::encodeConnect (std::string addr)
 
 	oct = (CalledPartyNumber_t*) calloc(1, sizeof (*oct));
 	rda = (DestinationRoutingAddress_t *) calloc(1, sizeof(*rda));
+	cap = (CutAndPaste_t*) calloc(1, sizeof(*cap));
 	assert(oct);
 	assert(rda);
+	assert(cap);
 
 	OCTET_STRING_fromString(oct, addr.c_str());
 
 	LOG("typeid: " << typeid(oct).name());
-
-//	inapMsg->destinationRoutingAddress.list.free(oct);
-
-//	oct->buf = (uint8_t*) calloc(1, addr.size());
-//	oct->size = addr.size();
 	LOG("oct size " << sizeof(oct) << " " << oct);
 
-
-//	ASN_SEQUENCE_ADD(&rda->list, oct);
-//	inapMsg->destinationRoutingAddress = rda;
-
 	ASN_SEQUENCE_ADD(&inapMsg->destinationRoutingAddress.list, oct);
-//	inapMsg->destinationRoutingAddress.list.array = &oct;
-
 	inapMsg->cutAndPaste = cap;
-
 
     ec = der_encode(&asn_DEF_ConnectArg,
                     inapMsg, write_out, &bs);
@@ -249,10 +239,4 @@ ByteStream InapMessage::encodeConnect (std::string addr)
 
 }
 
-
-
-
-
 // TODO InapMessage::encodeRelease(...)
-
-
