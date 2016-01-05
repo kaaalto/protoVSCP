@@ -200,19 +200,15 @@ ByteStream InapMessage::encodeConnect (std::string addr)
 	ConnectArg_t *inapMsg;
 	asn_enc_rval_t ec;
 	CalledPartyNumber_t *oct ;
-	DestinationRoutingAddress_t *rda ;
 	CutAndPaste_t *cap = 0;
 
 	LOG("Encoding ConnectArg...");
 	LOG("addr " << addr);
 
 	inapMsg = (ConnectArg_t*) calloc(1, sizeof(ConnectArg_t));
-
 	oct = (CalledPartyNumber_t*) calloc(1, sizeof (*oct));
-	rda = (DestinationRoutingAddress_t *) calloc(1, sizeof(*rda));
 	cap = (CutAndPaste_t*) calloc(1, sizeof(*cap));
 	assert(oct);
-	assert(rda);
 	assert(cap);
 
 	OCTET_STRING_fromString(oct, addr.c_str());
