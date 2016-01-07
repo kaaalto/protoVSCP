@@ -296,12 +296,12 @@ ByteStream TcapMessage::end(int _invokeId,
 //    if (rc != 0)
 //        throw("can't convert long to INTEGER");
 
-    long intT = 20;
+    long intT = 20;			// TODO KYSY TÄSTÄ!!!
 
     component->choice.returnResultLast.resultretres = (struct ReturnResult::resultretres*) calloc(1,sizeof(struct ReturnResult::resultretres*));
 
     component->choice.returnResultLast.resultretres->opCode.present = OPERATION_PR_localValue;
-    component->choice.returnResultLast.resultretres->opCode.choice.localValue = intT; // moForward TODO get from inco
+    component->choice.returnResultLast.resultretres->opCode.choice.localValue = intT; // moForward
 
     ANY_t* parameter = (ANY_t*) calloc(1,sizeof(ANY_t));
     parameter->buf = (uint8_t*) calloc(1, _resultData.size());
@@ -329,25 +329,30 @@ ByteStream TcapMessage::end(int _invokeId,
     std::cout << "TcapMessage::end() der_encode.encoded="
               << (int) ec.encoded << "\n";
 
-    if (ec.encoded != -1) {
-        if (tmpbuf[8] == 0x4b) {
-            tmpbuf[8] = 0x6b;
-            LOG ("APPLICATION 11 (4b) -> UNIVERSAL 11 (6b) FIX #1 applied") ;
-
+    if(ec.encoded == -1)
+    {
+    	LOG("ERROR - TCAP ENCODING FAILED: " << ec.failed_type);
+    }
+    else{
+        	LOG ("der_encode.encoded=" << (int) ec.encoded );
         }
 
-        if (tmpbuf[21] == 0x80) {
-            tmpbuf[21] = 0xA0;
-            // DialoguePortion / from External -> "Single-Asn.1-Type"
-            LOG ("FIX #2 external -> asn1 type") ;
-
-        }
+//    if (ec.encoded != -1) {
+//       if (tmpbuf[8] == 0x4b) {
+//            tmpbuf[8] = 0x6b;
+//            LOG ("APPLICATION 11 (4b) -> UNIVERSAL 11 (6b) FIX #1 applied") ;
+//
+//        }
+//
+//        if (tmpbuf[21] == 0x80) {
+//            tmpbuf[21] = 0xA0;
+//            // DialoguePortion / from External -> "Single-Asn.1-Type"
+//        LOG ("FIX #2 external -> asn1 type") ;
+//
+//        }
 
         asn_fprint(stdout, &asn_DEF_TCMessage, tcMsg);
-
         msg = tmpbuf;
-
-    }
 
     LOG ("-> ") ;
     return msg;

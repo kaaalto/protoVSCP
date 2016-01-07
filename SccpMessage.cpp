@@ -86,7 +86,37 @@ void SccpMessage::decodeSccp()
 
 }
 
-// TODO encode SCCP
+ByteStream SccpMessage::encodeSccp(ByteStream &tcapMsg, ByteStream &callingAdd, ByteStream &calledAdd)
+{
+	ByteStream msg;
+	int tlvLength = 0;
+
+	/*
+	  Parameter 			Clause 		Type (F V O) 		Length (octets)
+	Message type 			2.1 		F 						1
+	Protocol class 			3.6 		F 						1
+	Called party address 	3.4 		V 					3 minimum								// will always be 9 bytes in NGNlab network
+	Calling party address 	3.5 		V 					3 minimum 	(Note 2)					// will always be 11 bytes in NGNlab network?
+	Data 					3.16 		V 					2-X 		(Note 1)
+
+	NOTE 1 − Due to the ongoing studies on the SCCP called and calling party address, the maximum length
+	of this parameter needs further study. It is also noted that the transfer of up to 255 octets of user data is
+	allowed when the SCCP called and calling party address do not include global title.
+	NOTE 2 − The minimum length = 2 might apply in the special case of AI = X0000000 described in 3.5.
+	 */
+
+
+	// VSCP GT = 3584576030
+	// LANKAKESKUS GT = 358109020103
+
+	msg.push_back(0x09);  // message type UDT
+	msg.push_back(0x00);  // protocol class Basic Connectionless
+
+	msg.push_back(0x03);	 // pointer to 1st mandatory variable parameter	(3)
+	msg.push_back(0x0c);	 // pointer to 2nd mandatory variable parameter	(12)
+	msg.push_back(0x17);	 // pointer to 3rd mandatory variable parameter	(TCAP DATA) (23)
+
+}
 
 ByteStream SccpMessage::getData()
 {

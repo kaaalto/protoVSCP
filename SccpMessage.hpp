@@ -17,6 +17,7 @@ public:
 	SccpMessage(ByteStream&);
 
 	void decodeSccp();
+	ByteStream encodeSccp(ByteStream&, ByteStream&, ByteStream&);
 
 	ByteStream getData();
 	ByteStream getCalledPartyAddress();

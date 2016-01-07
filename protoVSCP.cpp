@@ -105,17 +105,21 @@ int main (int argc, char *argv[])
     			{
     				incomingSccp.decodeSccp();
     				LOG("SCCP decoded");
+
     				SccpData = incomingSccp.getData();
+    				ByteStream sccpCalled = incomingSccp.getCalledPartyAddress();
+    				ByteStream sccpCalling = incomingSccp.getCallingPartyAddress();
+
     				LOG("SccpData size: " << SccpData.size());
 
     			// TCAP
 
     			TcapMessage incomingTcap(SccpData);
 
-    			// get data from TcapMessage
+    			// get stuff from TcapMessage
     			int localCode 					= incomingTcap.operationLocalCode();
     			int otid 						= incomingTcap.transactionId();
-    			int invokeID 					= incomingTcap.invokeId();
+    			int invokeID 					= incomingTcap.invokeId() + 1;
     			ByteStream TcapParameterData 	= incomingTcap.parameterData();
 
 
@@ -141,6 +145,10 @@ int main (int argc, char *argv[])
 
 					if(newNum.empty() != true){
 						inapPayload = inapMsg.encodeConnect(newNum);
+
+						TcapMessage outTcap;
+						outTcap.end(invokeID, otid, inapPayload);
+
     			}
 
 
