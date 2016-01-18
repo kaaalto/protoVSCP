@@ -85,11 +85,11 @@ void SccpMessage::decodeSccp()
 
 
 }
-
-ByteStream SccpMessage::encodeSccp(ByteStream &tcapMsg, ByteStream &callingAdd, ByteStream &calledAdd)
+// tuleva calledAdd -> lähtevä callindAdd
+ByteStream SccpMessage::encodeSccp(ByteStream &tcapMsg,const ByteStream &calledAdd,const ByteStream &callingAdd)
 {
 	ByteStream msg;
-	int tlvLength = 0;
+	LOG("Encoding SCCP");
 
 	/*
 	  Parameter 			Clause 		Type (F V O) 		Length (octets)
@@ -106,16 +106,30 @@ ByteStream SccpMessage::encodeSccp(ByteStream &tcapMsg, ByteStream &callingAdd, 
 	 */
 
 
-	// VSCP GT = 3584576030
-	// LANKAKESKUS GT = 358109020103
 
 	msg.push_back(0x09);  // message type UDT
 	msg.push_back(0x00);  // protocol class Basic Connectionless
 
 	msg.push_back(0x03);	 // pointer to 1st mandatory variable parameter	(3)
 	msg.push_back(0x0c);	 // pointer to 2nd mandatory variable parameter	(12)
-	msg.push_back(0x17);	 // pointer to 3rd mandatory variable parameter	(TCAP DATA) (23)
+	msg.push_back(0x17);	 // pointer to 3rd mandatory variable parameter	(TCAP) (23)
 
+	for(unsigned int i = 0; i < calledAdd.size(); i++)
+	{
+	msg.push_back(calledAdd[i]);
+	}
+	for(unsigned int i = 0; i < callingAdd.size(); i++)
+	{
+	msg.push_back(callingAdd[i]);
+	}
+	for(unsigned int i = 0; i < tcapMsg.size(); i++)
+	{
+	msg.push_back(tcapMsg[i]);
+	}
+
+	LOG("Outgoing SCCP: " << msg)
+
+	return msg;
 }
 
 ByteStream SccpMessage::getData()

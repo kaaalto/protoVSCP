@@ -11,9 +11,6 @@
 #include <algorithm>
 #include <fstream>
 
-#include <typeinfo>
-
-
 /*
  * This is a custom function which writes the
  * encoded output into some FILE stream.
@@ -86,7 +83,7 @@ void InapMessage::decodeInitialDP(const ByteStream &_msg)
           &asn_DEF_InitialDPArg,
           (void **)&msg,
           &_msg[0],
-          _msg[0],
+          _msg.size(),
           0);
 
     if(rval.code != RC_OK) {
@@ -107,7 +104,7 @@ void InapMessage::decodeInitialDP(const ByteStream &_msg)
     	LOG("calledPartyNumber not found");
     	asn_DEF_InitialDPArg.free_struct(&asn_DEF_InitialDPArg, msg, 0);
     	return;
-    }
+    }else{
 
 		FILE *fp;
 		fp = fopen("data.txt", "w");
@@ -115,10 +112,12 @@ void InapMessage::decodeInitialDP(const ByteStream &_msg)
 		else
 		{
 			asn_fprint(fp, &asn_DEF_InitialDPArg, msg);
+
 		}
 		fclose(fp);
 		asn_DEF_InitialDPArg.free_struct(&asn_DEF_InitialDPArg, msg, 0);
 		parseNum();
+    }
 
    return;
 }
@@ -126,14 +125,19 @@ void InapMessage::decodeInitialDP(const ByteStream &_msg)
 
 void InapMessage::parseNum()
 {
+	LOG("ParseNum()");
 	std::string line;
-	std::ifstream is("data.txt");
 	bool isOdd = false;
+	std::ifstream is;
+
+	is.open("data.txt");
 
 	if(is.is_open())
 	{
+
 		while (is.good())
 		{
+
 			std::string numl = "calledPartyNumber:";
 			std::string tmp;
 
@@ -144,6 +148,8 @@ void InapMessage::parseNum()
 				line = tmp;
 			}
 		}
+
+		is.close();
 
 	} else {
 		LOG("FILE NOT OPEN");
@@ -161,6 +167,7 @@ void InapMessage::parseNum()
 
 	 if(!line.empty())
 	 {
+
 		rawNum = line;
 		size_t pos = (line.find(":") + 2);
 
@@ -206,14 +213,12 @@ ByteStream InapMessage::encodeConnect (std::string addr)
 	LOG("addr " << addr);
 
 	inapMsg = (ConnectArg_t*) calloc(1, sizeof(ConnectArg_t));
-	oct = (CalledPartyNumber_t*) calloc(1, sizeof (*oct));
-	cap = (CutAndPaste_t*) calloc(1, sizeof(*cap));
-	assert(oct);
-	assert(cap);
+	oct = (CalledPartyNumber_t*) calloc(1, sizeof (CalledPartyNumber_t));
+	cap = (CutAndPaste_t*) calloc(1, sizeof(CutAndPaste_t));
+
 
 	OCTET_STRING_fromString(oct, addr.c_str());
 
-	LOG("typeid: " << typeid(oct).name());
 	LOG("oct size " << sizeof(oct) << " " << oct);
 
 	ASN_SEQUENCE_ADD(&inapMsg->destinationRoutingAddress.list, oct);

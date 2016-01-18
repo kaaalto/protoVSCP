@@ -19,9 +19,10 @@
 //#include "MapMessage.hpp"
 
 //#define LOG(x) \
-//    std::cout << __FILE__ << "::" << __FUNCTION__ << ":" << __LINE__ << ": " << x << std::endl;
+    std::cout << __FILE__ << "::" << __FUNCTION__ << ":" << __LINE__ << ": " << x << std::endl;
 
 #include "TcapMessage.hpp"
+#include "Common.h"
 
 #include "ExternalPDU.h"
 //#include "DialoguePDU.h"
@@ -30,6 +31,8 @@
 #include "constr_TYPE.h"
 
 #include <iostream>
+#include <sstream>
+#include <fstream>
 
 #include <errno.h>
 #include <time.h>
@@ -230,6 +233,8 @@ ByteStream TcapMessage::end(int _invokeId,
     tcMsg->choice.end.dtid.buf[2] = (_transactionId >> 16) & 0xff;
     tcMsg->choice.end.dtid.buf[3] = (_transactionId >> 24) & 0xff;
 
+
+
 //    build ExternalPDU, DialoguePDU and AARQ apdu
 //    ANY_t* anyAdapter = (ANY_t*) calloc(1, sizeof(ANY_t));
 //    ExternalPDU_t* externalPDU = (ExternalPDU_t*) calloc(1,sizeof(ExternalPDU_t));
@@ -290,7 +295,7 @@ ByteStream TcapMessage::end(int _invokeId,
 
 
 //    INTEGER_t* intT = (INTEGER_t*) calloc(1,sizeof(INTEGER_t));
-//    int rc = asn_long2INTEGER(intT, 46); // 46= moForward, 44=mtForward TODO get from inco
+//    int rc = asn_long2INTEGER(intT, 46); // 46= moForward, 44=mtForward
 									//////////////////////////////////////////////////////////
 									/////////////// 0 = initialDP, 20 = connect
 //    if (rc != 0)
@@ -301,7 +306,7 @@ ByteStream TcapMessage::end(int _invokeId,
     component->choice.returnResultLast.resultretres = (struct ReturnResult::resultretres*) calloc(1,sizeof(struct ReturnResult::resultretres*));
 
     component->choice.returnResultLast.resultretres->opCode.present = OPERATION_PR_localValue;
-    component->choice.returnResultLast.resultretres->opCode.choice.localValue = intT; // moForward
+    component->choice.returnResultLast.resultretres->opCode.choice.localValue = intT; //
 
     ANY_t* parameter = (ANY_t*) calloc(1,sizeof(ANY_t));
     parameter->buf = (uint8_t*) calloc(1, _resultData.size());
@@ -317,17 +322,34 @@ ByteStream TcapMessage::end(int _invokeId,
     ComponentPortion_t* componentPort;
     componentPort = (ComponentPortion_t*) calloc(1,sizeof(ComponentPortion_t));
 
-    void* foo = &(componentPort->list);
-    int rc = ASN_SEQUENCE_ADD(foo, component);
+ //   void* foo = &(componentPort->list);
+//    int rc = ASN_SEQUENCE_ADD(foo, component);
+    int rc = ASN_SEQUENCE_ADD(&componentPort->list, component);
+
+    if (rc != 0) {
+          std::cout << "asn_seq_add() = rc=" << rc << ",errno: " << errno;
+          throw("can't insert sequence");
+      }
+
+ //   tcMsg->choice.end.components = (ComponentPortion_t*) calloc(1, sizeof(componentPort));
+ //   ASN_SEQUENCE_ADD(&tcMsg->choice.end.components->list, componentPort);
+
     tcMsg->choice.end.components =  componentPort;
+    LOG("tcMsg->choice.end.components =  componentPort; ");
 
     /* Encode the TCMessage type as BER (DER) */
     ByteStream tmpbuf;
+    LOG("ByteStream tmpbuf;");
+    asn_fprint(stdout, &asn_DEF_TCMessage, tcMsg);
+
     ec = der_encode(&asn_DEF_TCMessage, tcMsg, write_out, &tmpbuf);
 
 
-    std::cout << "TcapMessage::end() der_encode.encoded="
-              << (int) ec.encoded << "\n";
+
+   // std::cout << "TcapMessage::end() der_encode.encoded="
+   //           << (int) ec.encoded << "\n";
+
+    LOG("TcapMessage::End Encoded");
 
     if(ec.encoded == -1)
     {
@@ -467,8 +489,6 @@ ByteStream TcapMessage::begin(const ByteStream &_componentData)
         parameter->buf[i] = _componentData[i];
 
     parameter->size = mapSize;
-
-
 
     invoke->opCode = *operationType;
     invoke->parameter = parameter;

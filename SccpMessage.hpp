@@ -4,6 +4,7 @@
 #define SCCPMESSAGE_H_
 
 #include "M3UAmessage.hpp"
+#include "TcapMessage.hpp"
 
 class SccpMessage {
 public:
@@ -17,7 +18,7 @@ public:
 	SccpMessage(ByteStream&);
 
 	void decodeSccp();
-	ByteStream encodeSccp(ByteStream&, ByteStream&, ByteStream&);
+	ByteStream encodeSccp(ByteStream&, const ByteStream&, const ByteStream&);
 
 	ByteStream getData();
 	ByteStream getCalledPartyAddress();

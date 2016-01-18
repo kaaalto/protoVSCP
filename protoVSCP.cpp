@@ -116,7 +116,6 @@ int main (int argc, char *argv[])
 
     			TcapMessage incomingTcap(SccpData);
 
-    			// get stuff from TcapMessage
     			int localCode 					= incomingTcap.operationLocalCode();
     			int otid 						= incomingTcap.transactionId();
     			int invokeID 					= incomingTcap.invokeId() + 1;
@@ -146,17 +145,34 @@ int main (int argc, char *argv[])
 					if(newNum.empty() != true){
 						inapPayload = inapMsg.encodeConnect(newNum);
 
-						TcapMessage outTcap;
-						outTcap.end(invokeID, otid, inapPayload);
+						TcapMessage outgoingTcap;
+						ByteStream outTcap;
+						outTcap = outgoingTcap.end(invokeID, otid, inapPayload);
 
+						SccpMessage outSccp;
+						ByteStream sccpStream;
+			    		sccpStream = outSccp.encodeSccp(outTcap, sccpCalling, sccpCalled);
+
+			    		if(sccpStream.size())
+			    		{
+
+			    			M3UAmessage outM3UA;
+			    			ByteStream m3uaStream;
+			    			m3uaStream = outM3UA.encodeMsg(sccpStream);
+
+			    			if(m3uaStream.size())
+			    			{
+			    				int rc = sc.sendMsg(m3uaStream, SCTP_PID_M3UA, 1);
+			    				LOG("SctpConnection::sendMsg: " << rc);
+			    			}
+			    			break;
+			    		}
+			    		break;
+					}
+					break;
     			}
-
-
-    			}
-
-
-
-    			}
+    			break;
+    		}
 
     			break;
     		}

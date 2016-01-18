@@ -3,10 +3,11 @@
 #include <iomanip>
 #include <fstream>
 #include <stdlib.h>
+#include "Common.h"
 
 
 
-#define LOG(x) \
+//#define LOG(x) \
     std::cout << __FILE__ << "::" << __FUNCTION__ << ":" << __LINE__ << ": " << x << std::endl;
 
 
@@ -507,6 +508,109 @@ ByteStream M3UAmessage::getPayload() const
 	}
 	LOG ("Payload size: " << payload.size());
 	return payload;
+}
+
+ByteStream M3UAmessage::encodeMsg(const ByteStream &_sccpMsg)
+{
+
+	ByteStream msg;
+	int tlvLength = 0;
+
+
+//	   The DATA message contains the SS7 MTP3-User protocol data, which is
+//	   an MTP-TRANSFER primitive, including the complete MTP3 Routing Label.
+//	   The DATA message contains the following variable-length parameters:
+//
+//	        Network Appearance       Optional
+//	        Routing Context          Conditional
+//	        Protocol Data            Mandatory
+//	        Correlation Id           Optional
+//
+//	   The following format MUST be used for the Data Message:
+//
+//	       0                   1                   2                   3
+//	       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+//	      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//	      |        Tag = 0x0200           |          Length = 8           |
+//	      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//	      |                       Network Appearance                      |
+//	      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//	      |        Tag = 0x0006           |          Length = 8           |
+//	      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//	      |                        Routing Context                        |
+//	      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//	      |        Tag = 0x0210           |             Length            |
+//	      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//	      \                                                               \
+	      /                        Protocol Data                          /
+//	      \                                                               \
+	      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//	      |        Tag = 0x0013           |          Length = 8           |
+//	      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//	      |                        Correlation Id                         |
+//	      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+	//routing context tag
+
+	msg.push_back(0x00);
+	msg.push_back(0x06);
+
+	msg.push_back(0x00);
+	msg.push_back(0x08);
+
+	//routing context
+
+	msg.push_back(0x00);
+	msg.push_back(0x00);
+	msg.push_back(0x00);
+	msg.push_back(0x02);		// TODO KYSY TÄSTÄ
+
+	unsigned int dataLen = _sccpMsg.size();
+	if(!dataLen)
+	{
+		ByteStream(empty);
+		return empty;
+	}
+
+	msg.push_back(0x02);
+	msg.push_back(0x10 + dataLen);
+
+	msg.insert(msg.end(), _sccpMsg.begin(), _sccpMsg.end());
+
+	LOG("bytes to M3UA: " << dataLen);
+
+    // size on msg vector is total of TLV part size
+
+    tlvLength = msg.size();
+
+//
+//       The following list contains the valid Message Type Classes:
+//
+//            1     Transfer Messages
+//
+//    Message Type: 8 bits (unsigned integer)
+//
+//          The following list contains the message types for the defined
+//          messages.
+//
+//
+//          Transfer Messages (see Section 3.3)
+//
+//               0        Reserved
+//               1        Payload Data (DATA)
+//            2 to 127    Reserved by the IETF
+//          128 to 255    Reserved for IETF-Defined Transfer extensions
+
+
+
+    ByteStream header = commonHeader(0x01, 0x01, tlvLength);	// class + type
+    msg.insert(msg.begin(), header.begin(), header.end());
+
+    LOG("M3UA out: " << msg)
+    return msg;
+
+
+
 }
 
 

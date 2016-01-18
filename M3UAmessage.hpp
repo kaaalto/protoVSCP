@@ -35,6 +35,7 @@ public:
 
 	void decodePayload();
 	ByteStream getPayload() const;
+	ByteStream encodeMsg(const ByteStream&);
 
 
 
