@@ -35,7 +35,16 @@ public:
 
 	void decodePayload();
 	ByteStream getPayload() const;
-	ByteStream encodeMsg(const ByteStream&);
+	ByteStream encodeMsg(const ByteStream&, const ByteStream&,
+			const ByteStream&, const ByteStream&, const ByteStream&,
+			const ByteStream&, const ByteStream&);
+
+	ByteStream opc() const { return m_opc; }
+	ByteStream dpc() const { return m_dpc; }
+	ByteStream si() const { return m_si; }
+	ByteStream ni() const { return m_ni; }
+	ByteStream mp() const { return m_mp; }
+	ByteStream sls() const { return m_sls; }
 
 
 
@@ -43,6 +52,14 @@ private:
 	ByteStream commonHeader(unsigned char, unsigned char,unsigned int);
 	ByteStream m_msg;
 	ByteStream payload;
+
+	ByteStream m_opc;
+	ByteStream m_dpc;
+	ByteStream m_si;
+	ByteStream m_ni;
+	ByteStream m_mp;
+	ByteStream m_sls;
+
 };
 
 #endif /* M3UAMESSAGE_HPP_ */

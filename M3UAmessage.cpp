@@ -472,7 +472,19 @@ void M3UAmessage::decodePayload()
  *		   User Protocol Data: variable-length octet string
  */
 
-			dataLen -= 16;		// ignore & skip 16 bytes(useless parameters)
+			for(int y = 4; y < 16 ; y++)
+			{
+				if(y < 8) m_opc.push_back(m_msg[y+i]);
+				else if (y > 7 && y < 12) m_dpc.push_back(m_msg[y+i]);
+				else if (y > 11 && y < 13) m_si.push_back(m_msg[y+i]);
+				else if (y > 12 && y < 14) m_ni.push_back(m_msg[y+i]);
+				else if (y > 13 && y < 15) m_mp.push_back(m_msg[y+i]);
+				else if (y > 14 && y < 16) m_sls.push_back(m_msg[y+i]);
+			}
+
+
+
+			dataLen -= 16;		// skip 16 bytes
 			i += 16;			//
 
 			LOG("datalength: " << dataLen << " from: " << i);
@@ -482,7 +494,7 @@ void M3UAmessage::decodePayload()
 				LOG("ERROR - INVALID LENGTH TAG");
 			}
 
-			for(int x; x < dataLen; x++)
+			for(int x = 0; x < dataLen; x++)
 			{
 				payload.push_back(m_msg[x+i]);
 			}
@@ -510,7 +522,9 @@ ByteStream M3UAmessage::getPayload() const
 	return payload;
 }
 
-ByteStream M3UAmessage::encodeMsg(const ByteStream &_sccpMsg)
+ByteStream M3UAmessage::encodeMsg(const ByteStream &_sccpMsg, const ByteStream &opc,
+		const ByteStream &dpc, const ByteStream &si, const ByteStream &ni,const ByteStream &mp,
+		const ByteStream &sls)
 {
 
 	ByteStream msg;
@@ -542,9 +556,9 @@ ByteStream M3UAmessage::encodeMsg(const ByteStream &_sccpMsg)
 //	      |        Tag = 0x0210           |             Length            |
 //	      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 //	      \                                                               \
-	      /                        Protocol Data                          /
-//	      \                                                               \
-	      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//	      /                        Protocol Data                          /
+//        \                                                               \
+//	      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 //	      |        Tag = 0x0013           |          Length = 8           |
 //	      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 //	      |                        Correlation Id                         |
@@ -565,6 +579,15 @@ ByteStream M3UAmessage::encodeMsg(const ByteStream &_sccpMsg)
 	msg.push_back(0x00);
 	msg.push_back(0x02);		// TODO KYSY TÄSTÄ
 
+
+
+	// Protocol data tag
+
+	msg.push_back(0x02);
+	msg.push_back(0x10) ;
+
+	// Protocol Data length
+
 	unsigned int dataLen = _sccpMsg.size();
 	if(!dataLen)
 	{
@@ -572,16 +595,104 @@ ByteStream M3UAmessage::encodeMsg(const ByteStream &_sccpMsg)
 		return empty;
 	}
 
-	msg.push_back(0x02);
-	msg.push_back(0x10 + dataLen);
+	msg.push_back(0x00);
+	msg.push_back(dataLen);
 
+//	Protocol Data: variable length
+//
+//		----------------------------------------------------------------------------
+//	   The Protocol Data parameter is encoded as follows:
+//
+//	       0                   1                   2                   3
+//	       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+//	      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//	      |                     Originating Point Code                    |
+//	      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//	      |                     Destination Point Code                    |
+//	      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//	      |       SI      |       NI      |      MP       |      SLS      |
+//	      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//	      \                                                               \
+//	      /                     User Protocol Data                        /
+//	      \                                                               \
+//	      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+//
+//	   Originating Point Code: 32 bits (unsigned integer)
+//	   Destination Point Code: 32 bits (unsigned integer)
+//
+//	   The Originating and Destination Point Code fields contains the OPC
+//	   and DPC from the routing label of the original SS7 message in Network
+//	   Byte Order, justified to the least significant bit.  Unused bits are
+//	   coded `0'.
+//
+//	   Service Indicator: 8 bits (unsigned integer)
+//
+//	   The Service Indicator field contains the SI field from the original
+//	   SS7 message justified to the least significant bit.  Unused bits are
+//	   coded `0'.
+//
+//	   Network Indicator: 8-bits (unsigned integer)
+//
+//	   The Network Indicator contains the NI field from the original SS7
+//	   message justified to the least significant bit.  Unused bits are
+//	   coded `0'.
+//
+//	   Message Priority: 8 bits (unsigned integer)
+//
+//	   The Message Priority field contains the MP bits (if any) from the
+//	   original SS7 message, both for ANSI-style and TTC-style [29] message
+//	   priority bits. The MP bits are aligned to the least significant bit.
+//	   Unused bits are coded `0'.
+//
+//
+//	   Signalling Link Selection: 8 bits (unsigned integer)
+//
+//	   The Signalling Link Selection field contains the SLS bits from the
+//	   routing label of the original SS7 message justified to the least
+//	   significant bit and in Network Byte Order.  Unused bits are coded
+//	   `0'.
+//
+//	   User Protocol Data: (byte string)
+//
+//	   The User Protocol Data field contains a byte string of MTP-User
+//	   information from the original SS7 message starting with the first
+//	   byte of the original SS7 message following the Routing Label.
+
+	//OPC
+	msg.insert(msg.end(), opc.begin(), opc.end());
+	//DPC
+	msg.insert(msg.end(), dpc.begin(), dpc.end());
+	//SI
+	msg.insert(msg.end(), si.begin(), si.end());
+	//NI
+	msg.insert(msg.end(), ni.begin(), ni.end());
+	//MP
+	msg.insert(msg.end(), mp.begin(), mp.end());
+	//SLS
+	msg.insert(msg.end(), sls.begin(), sls.end());
+
+	//User Protocol Data
 	msg.insert(msg.end(), _sccpMsg.begin(), _sccpMsg.end());
-
 	LOG("bytes to M3UA: " << dataLen);
 
-    // size on msg vector is total of TLV part size
 
-    tlvLength = msg.size();
+
+
+    // If we didn't supply bytes multiple of four, pad it to four:
+    unsigned int padsToBeAdded = 4 - dataLen % 4;
+
+    if (padsToBeAdded < 4) {
+        for (unsigned int i=0; i < padsToBeAdded; i++)
+            msg.push_back(0x00);
+
+        std::cout << "Padding bytes to be added: "
+                  << padsToBeAdded << "\n";
+    }
+
+
+// size on msg vector is total of TLV part size
+	tlvLength = msg.size();
+
 
 //
 //       The following list contains the valid Message Type Classes:

@@ -89,7 +89,7 @@ void InapMessage::decodeInitialDP(const ByteStream &_msg)
     if(rval.code != RC_OK) {
     	LOG("InitialDPArg decoding failed, code: " << rval.code << ", consumed bytes: " << rval.consumed );
 
-    	        /* Free partially decoded rect */
+    	        /* Free partially decoded struct */
     	        asn_DEF_InitialDPArg.free_struct(
     	            &asn_DEF_InitialDPArg, msg, 0);
     	        return;

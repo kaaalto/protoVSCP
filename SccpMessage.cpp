@@ -33,6 +33,7 @@ void SccpMessage::decodeSccp()
 {
 	LOG("Decoding SCCP ...");
 	LOG("SCCP msg size: " << m_msg.size());
+	LOG("SCCP MESSAGE : " << m_msg);
 
 
 
@@ -85,7 +86,7 @@ void SccpMessage::decodeSccp()
 
 
 }
-// tuleva calledAdd -> lähtevä callindAdd
+// tuleva calledAdd -> lähtevä callingAdd
 ByteStream SccpMessage::encodeSccp(ByteStream &tcapMsg,const ByteStream &calledAdd,const ByteStream &callingAdd)
 {
 	ByteStream msg;
@@ -105,27 +106,42 @@ ByteStream SccpMessage::encodeSccp(ByteStream &tcapMsg,const ByteStream &calledA
 	NOTE 2 − The minimum length = 2 might apply in the special case of AI = X0000000 described in 3.5.
 	 */
 
-
-
 	msg.push_back(0x09);  // message type UDT
 	msg.push_back(0x00);  // protocol class Basic Connectionless
 
-	msg.push_back(0x03);	 // pointer to 1st mandatory variable parameter	(3)
-	msg.push_back(0x0c);	 // pointer to 2nd mandatory variable parameter	(12)
-	msg.push_back(0x17);	 // pointer to 3rd mandatory variable parameter	(TCAP) (23)
 
-	for(unsigned int i = 0; i < calledAdd.size(); i++)
+
+	unsigned int calledSize = calledAdd.size() - 1;			// ignore last byte
+	unsigned int callingSize = callingAdd.size() -1 ;
+	unsigned int tcSize = tcapMsg.size() ;
+
+	unsigned int callingPointer = calledAdd.size() + 2;
+	unsigned int dataPointer = callingSize + callingPointer;
+
+	msg.push_back(0x03);	 			// pointer to called party address
+	msg.push_back(callingPointer);	 	// pointer to calling party address
+	msg.push_back(dataPointer);	 		// pointer to data	(TCAP)
+
+
+	msg.push_back(calledSize);
+	for(unsigned int i = 0; i < calledSize; i++)
 	{
-	msg.push_back(calledAdd[i]);
+		msg.push_back(calledAdd[i]);
 	}
-	for(unsigned int i = 0; i < callingAdd.size(); i++)
+
+	msg.push_back(callingSize);
+	for(unsigned int i = 0; i < callingSize; i++)
 	{
-	msg.push_back(callingAdd[i]);
+		msg.push_back(callingAdd[i]);
 	}
-	for(unsigned int i = 0; i < tcapMsg.size(); i++)
+
+	msg.push_back(tcSize);
+	for(unsigned int i = 0; i < tcSize; i++)
 	{
-	msg.push_back(tcapMsg[i]);
+		msg.push_back(tcapMsg[i]);
 	}
+
+	LOG("tcSize: " << tcSize << " \ntcapMsg: " << tcapMsg);
 
 	LOG("Outgoing SCCP: " << msg)
 

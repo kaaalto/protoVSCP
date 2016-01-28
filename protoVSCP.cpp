@@ -1,5 +1,3 @@
-
-
 #include "Common.h"
 #include "SctpConnection.hpp"
 #include "M3UAmessage.hpp"
@@ -94,6 +92,14 @@ int main (int argc, char *argv[])
 
     			ByteStream M3uaData;
     			incomingM3uaMsg.decodePayload();
+
+    			ByteStream m3uaOpc 	= incomingM3uaMsg.opc();
+    			ByteStream m3uaDpc	= incomingM3uaMsg.dpc();
+    			ByteStream m3uaSi 	= incomingM3uaMsg.si();
+    			ByteStream m3uaNi 	= incomingM3uaMsg.ni();
+    			ByteStream m3uaMp 	= incomingM3uaMsg.mp();
+    			ByteStream m3uaSls 	= incomingM3uaMsg.sls();
+
     			M3uaData = incomingM3uaMsg.getPayload();
 
     			// SCCP
@@ -121,7 +127,6 @@ int main (int argc, char *argv[])
     			int invokeID 					= incomingTcap.invokeId() + 1;
     			ByteStream TcapParameterData 	= incomingTcap.parameterData();
 
-
     			LOG("localCode: " << localCode << " otid: " << otid << " invokeID: " << invokeID);
 
     			// INAP
@@ -130,7 +135,6 @@ int main (int argc, char *argv[])
     			LOG("CPN: " << _calledPartyNum);
 
 
-    			ByteStream inapPayload;
 
     			if(_calledPartyNum.empty() != true){
     				// SQL DATABASE
@@ -140,10 +144,14 @@ int main (int argc, char *argv[])
     				std::string newNum = db.find(_calledPartyNum);
 					db.close();
 
-					//ByteStream num(newNum.begin(), newNum.end());
+
 
 					if(newNum.empty() != true){
-						inapPayload = inapMsg.encodeConnect(newNum);
+
+						InapMessage outInap;
+						ByteStream inapPayload;
+
+						inapPayload = outInap.encodeConnect(newNum);
 
 						TcapMessage outgoingTcap;
 						ByteStream outTcap;
@@ -158,7 +166,8 @@ int main (int argc, char *argv[])
 
 			    			M3UAmessage outM3UA;
 			    			ByteStream m3uaStream;
-			    			m3uaStream = outM3UA.encodeMsg(sccpStream);
+			    			m3uaStream = outM3UA.encodeMsg(sccpStream, m3uaOpc, m3uaDpc,
+			    					m3uaSi, m3uaNi, m3uaMp, m3uaSls);
 
 			    			if(m3uaStream.size())
 			    			{
@@ -173,7 +182,6 @@ int main (int argc, char *argv[])
     			}
     			break;
     		}
-
     			break;
     		}
     		default:

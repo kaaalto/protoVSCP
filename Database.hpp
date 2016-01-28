@@ -10,9 +10,7 @@
 class Database
 {
 
-	/*TODO addNum(), deleteNum(), list()... noi ny ainakin vois tehä jos ehtii
-	 ja CLI:n kautta toimiva käyttöliittymä
-	 loppuvaiheen juttuja
+	/*TODO addNum(), deleteNum(), list()...  CLI:n kautta toimiva käyttöliittymä
 	*/
 
 private:

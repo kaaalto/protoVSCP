@@ -14,7 +14,7 @@ Database::~Database()
 void Database::open()
 {
    int rc;
-   const char *dbName = "numsi.db";
+   const char *dbName = "numsi.db";		// TODO  path
 
    rc = sqlite3_open(dbName, &db);
 
@@ -30,7 +30,7 @@ void Database::open()
 std::string Database::find(std::string fNum)
 {
 	sqlite3_stmt *stmt;
-	std::string sql = "SELECT * FROM nums WHERE orignum = '" + fNum + "';" ;
+	std::string sql = "SELECT * FROM NUMS WHERE ORIGNUM = '" + fNum + "';" ;
 	std::string transNum;
 	std::string noNum = "3BD"; 		// number not found
 
@@ -54,7 +54,8 @@ std::string Database::find(std::string fNum)
 		}
 
 		}else{
-			LOG("SQL QUERY ERROR " << retval );
+			LOG("SQL QUERY ERROR " << retval );		// TODO tälle jotain
+			transNum = noNum;
 			LOG(sqlite3_errmsg(db));
 		}
 
