@@ -579,8 +579,6 @@ ByteStream M3UAmessage::encodeMsg(const ByteStream &_sccpMsg, const ByteStream &
 	msg.push_back(0x00);
 	msg.push_back(0x02);		// TODO KYSY TÄSTÄ
 
-
-
 	// Protocol data tag
 
 	msg.push_back(0x02);
@@ -588,7 +586,11 @@ ByteStream M3UAmessage::encodeMsg(const ByteStream &_sccpMsg, const ByteStream &
 
 	// Protocol Data length
 
-	unsigned int dataLen = _sccpMsg.size();
+//	unsigned int dataLen = _sccpMsg.size();
+	unsigned int dataLen = _sccpMsg.size() + opc.size() + dpc.size() + si.size() +
+				ni.size() + mp.size() + sls.size();
+
+	LOG("sccp message size: " << _sccpMsg.size());
 	if(!dataLen)
 	{
 		ByteStream(empty);
@@ -596,7 +598,8 @@ ByteStream M3UAmessage::encodeMsg(const ByteStream &_sccpMsg, const ByteStream &
 	}
 
 	msg.push_back(0x00);
-	msg.push_back(dataLen);
+	msg.push_back(dataLen + 4); // + size of tag + length fields
+
 
 //	Protocol Data: variable length
 //

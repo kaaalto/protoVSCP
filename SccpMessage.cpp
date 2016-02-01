@@ -113,10 +113,10 @@ ByteStream SccpMessage::encodeSccp(ByteStream &tcapMsg,const ByteStream &calledA
 
 	unsigned int calledSize = calledAdd.size() - 1;			// ignore last byte
 	unsigned int callingSize = callingAdd.size() -1 ;
-	unsigned int tcSize = tcapMsg.size() ;
+
 
 	unsigned int callingPointer = calledAdd.size() + 2;
-	unsigned int dataPointer = callingSize + callingPointer;
+	unsigned int dataPointer = callingSize + callingPointer ;
 
 	msg.push_back(0x03);	 			// pointer to called party address
 	msg.push_back(callingPointer);	 	// pointer to calling party address
@@ -135,14 +135,15 @@ ByteStream SccpMessage::encodeSccp(ByteStream &tcapMsg,const ByteStream &calledA
 		msg.push_back(callingAdd[i]);
 	}
 
+	unsigned int tcSize = tcapMsg.size() ;
 	msg.push_back(tcSize);
-	for(unsigned int i = 0; i < tcSize; i++)
+	for(unsigned int i = 0; i < tcSize ; i++)
 	{
 		msg.push_back(tcapMsg[i]);
 	}
 
 	LOG("tcSize: " << tcSize << " \ntcapMsg: " << tcapMsg);
-
+	LOG("Outgoing SCCP message size: " << msg.size() );
 	LOG("Outgoing SCCP: " << msg)
 
 	return msg;

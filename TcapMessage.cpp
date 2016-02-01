@@ -309,7 +309,7 @@ ByteStream TcapMessage::end(int _invokeId,
         throw("can't convert long to INTEGER");
 
 
-    LOG("intT: " << (int) intT << "  " );
+    LOG("intT: " <<  intT << "  " );
 
 
     component->choice.returnResultLast.resultretres = (struct ReturnResult::resultretres*) calloc(1,sizeof(*component->choice.returnResultLast.resultretres));
@@ -328,7 +328,6 @@ ByteStream TcapMessage::end(int _invokeId,
 
     parameter->size = _resultData.size();
     component->choice.returnResultLast.resultretres->parameter = parameter;
-
 
     // component portion
     ComponentPortion_t* componentPort;
