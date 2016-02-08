@@ -55,4 +55,4 @@ extern asn_TYPE_descriptor_t asn_DEF_TCMessage;
 #endif
 
 #endif	/* _TCMessage_H_ */
-//#include <asn_internal.h>
+#include <asn_internal.h>

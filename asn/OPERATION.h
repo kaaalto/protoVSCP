@@ -30,7 +30,7 @@ typedef enum OPERATION_PR {
 typedef struct OPERATION {
 	OPERATION_PR present;
 	union OPERATION_u {
-		INTEGER_t	 localValue;
+		long	 localValue;
 		OBJECT_IDENTIFIER_t	 globalValue;
 	} choice;
 	

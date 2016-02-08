@@ -159,9 +159,9 @@ TcapMessage::TcapMessage(ByteStream _incoming) :
                 {
 
                     std::cout << "   opcode (localValue): "
-                            << (int) component->choice.invoke.opCode.choice.localValue.buf << "\n";
+                            << (long) component->choice.invoke.opCode.choice.localValue << "\n";
 
-                  m_operationLocalCode = (int) component->choice.invoke.opCode.choice.localValue.buf;
+                  m_operationLocalCode = (long) component->choice.invoke.opCode.choice.localValue;
 
                 }
 
@@ -299,26 +299,13 @@ ByteStream TcapMessage::end(int _invokeId,
     component->choice.returnResultLast.invokeID = _invokeId;
 
 
-
-    INTEGER_t* intT = (INTEGER_t*) calloc(1,sizeof(INTEGER_t));
-    int rc = asn_long2INTEGER(intT, (long) 20); // 46= moForward, 44=mtForward
-									/////////////// 0 = initialDP, 20 = connect
-									//           TODO KYSY!!
-
-    if (rc != 0)
-        throw("can't convert long to INTEGER");
-
-
-    LOG("intT: " <<  intT << "  " );
-
-
     component->choice.returnResultLast.resultretres = (struct ReturnResult::resultretres*) calloc(1,sizeof(*component->choice.returnResultLast.resultretres));
     if(!component->choice.returnResultLast.resultretres) {
          throw ("calloc failure");
          return msg;
      }
     component->choice.returnResultLast.resultretres->opCode.present = OPERATION_PR_localValue;
-    component->choice.returnResultLast.resultretres->opCode.choice.localValue = *intT;
+    component->choice.returnResultLast.resultretres->opCode.choice.localValue = 20;
 
     ANY_t* parameter = (ANY_t*) calloc(1,sizeof(ANY_t));
     parameter->buf = (uint8_t*) calloc(1, _resultData.size());
@@ -335,8 +322,9 @@ ByteStream TcapMessage::end(int _invokeId,
 
  //   void* foo = &(componentPort->list);
 //    int rc = ASN_SEQUENCE_ADD(foo, component);
-    rc = ASN_SEQUENCE_ADD(&componentPort->list, component);
+   rc = ASN_SEQUENCE_ADD(&componentPort->list, component);
 
+   int rc;
     if (rc != 0) {
           std::cout << "asn_seq_add() = rc=" << rc << ",errno: " << errno;
           throw("can't insert sequence");
@@ -352,8 +340,6 @@ ByteStream TcapMessage::end(int _invokeId,
     ByteStream tmpbuf;
 
     ec = der_encode(&asn_DEF_TCMessage, tcMsg, write_out, &tmpbuf);
-
-
 
     std::cout << "TcapMessage::end() der_encode.encoded="
               << (int) ec.encoded << "\n";

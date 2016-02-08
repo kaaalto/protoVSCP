@@ -216,12 +216,20 @@ ByteStream InapMessage::encodeConnect (std::string addr)
 	oct = (CalledPartyNumber_t*) calloc(1, sizeof (CalledPartyNumber_t));
 	cap = (CutAndPaste_t*) calloc(1, sizeof(CutAndPaste_t));
 
+	DestinationRoutingAddress_t *dta = (DestinationRoutingAddress_t*) calloc(1, sizeof(DestinationRoutingAddress_t));
+
+//	OCTET_STRING_fromBuf(oct, addr.c_str(), -1) ;
 
 	OCTET_STRING_fromString(oct, addr.c_str());
+	ASN_SEQUENCE_ADD(dta, oct);
+
+	LOG("dta size " << sizeof(dta) << " " << dta);
 
 	LOG("oct size " << sizeof(oct) << " " << oct);
+	ASN_SEQUENCE_ADD(&inapMsg->destinationRoutingAddress, dta);
 
-	ASN_SEQUENCE_ADD(&inapMsg->destinationRoutingAddress.list, oct);
+//	ASN_SEQUENCE_ADD(&inapMsg->destinationRoutingAddress.list, oct);
+
 	inapMsg->cutAndPaste = cap;
 
     ec = der_encode(&asn_DEF_ConnectArg,
