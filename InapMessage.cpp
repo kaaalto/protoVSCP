@@ -28,12 +28,10 @@ write_out(const void *buffer, size_t size, void *app_key) {
 
     return 0;
 }
-
 InapMessage::InapMessage()
 {
 	return;
 }
-
 InapMessage::InapMessage(int _localCode, const ByteStream &_incoming)
 {
 		LOG("INAP message - size: " << _incoming.size() );
@@ -218,17 +216,27 @@ ByteStream InapMessage::encodeConnect (std::string addr)
 
 	DestinationRoutingAddress_t *dta = (DestinationRoutingAddress_t*) calloc(1, sizeof(DestinationRoutingAddress_t));
 
-//	OCTET_STRING_fromBuf(oct, addr.c_str(), -1) ;
+	const char * c = addr.c_str();
 
-	OCTET_STRING_fromString(oct, addr.c_str());
-	ASN_SEQUENCE_ADD(dta, oct);
+//	oct->buf = c;
+//	oct->size = strlen(c);
 
-	LOG("dta size " << sizeof(dta) << " " << dta);
+	OCTET_STRING_fromString(oct, c);
+//	ASN_SEQUENCE_ADD(dta, oct);
 
-	LOG("oct size " << sizeof(oct) << " " << oct);
-	ASN_SEQUENCE_ADD(&inapMsg->destinationRoutingAddress, dta);
+//	OCTET_STRING_t * str = OCTET_STRING_new_fromBuf(&asn_DEF_OCTET_STRING, c, strlen(c));
+//	asn_fprint(stdout, &asn_DEF_OCTET_STRING, str);
+//	LOG("dta size " << sizeof(dta) << " " << dta);
 
-//	ASN_SEQUENCE_ADD(&inapMsg->destinationRoutingAddress.list, oct);
+//	asn_fprint(stdout, &asn_DEF_DestinationRoutingAddress, dta);
+
+	asn_fprint(stdout, &asn_DEF_OCTET_STRING, oct);
+
+//	ASN_SEQUENCE_ADD(&inapMsg->destinationRoutingAddress, dta);
+
+
+	ASN_SEQUENCE_ADD(&inapMsg->destinationRoutingAddress.list, oct);
+//	&inapMsg->destinationRoutingAddress.list = c;
 
 	inapMsg->cutAndPaste = cap;
 

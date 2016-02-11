@@ -320,11 +320,11 @@ ByteStream TcapMessage::end(int _invokeId,
     ComponentPortion_t* componentPort;
     componentPort = (ComponentPortion_t*) calloc(1,sizeof(ComponentPortion_t));
 
- //   void* foo = &(componentPort->list);
-//    int rc = ASN_SEQUENCE_ADD(foo, component);
-   rc = ASN_SEQUENCE_ADD(&componentPort->list, component);
+    void* foo = &(componentPort->list);
+    int rc = ASN_SEQUENCE_ADD(foo, component);
+ //  rc = ASN_SEQUENCE_ADD(&componentPort->list, component);
 
-   int rc;
+
     if (rc != 0) {
           std::cout << "asn_seq_add() = rc=" << rc << ",errno: " << errno;
           throw("can't insert sequence");
