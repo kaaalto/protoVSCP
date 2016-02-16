@@ -305,7 +305,7 @@ ByteStream TcapMessage::end(int _invokeId,
          return msg;
      }
     component->choice.returnResultLast.resultretres->opCode.present = OPERATION_PR_localValue;
-    component->choice.returnResultLast.resultretres->opCode.choice.localValue = 20;
+    component->choice.returnResultLast.resultretres->opCode.choice.localValue = 0x20;
 
     ANY_t* parameter = (ANY_t*) calloc(1,sizeof(ANY_t));
     parameter->buf = (uint8_t*) calloc(1, _resultData.size());

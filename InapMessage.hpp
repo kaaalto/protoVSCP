@@ -16,10 +16,13 @@ class InapMessage
 private:
 	std::string strCpn;
 	void parseNum();
+	OCTET_STRING_t encodeDta(const char*);
+	long toHex(char*);
 
 	std::string rawNum;
 
 public:
+
 	InapMessage();
 	InapMessage(int _localCode, const ByteStream &);
 	void decodeInitialDP(const ByteStream &);
