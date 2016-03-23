@@ -6,7 +6,6 @@
 #include "SccpMessage.hpp"
 #include "Database.hpp"
 
-
 #include "TCMessage.h"
 
 #include <stdio.h>
@@ -134,8 +133,6 @@ int main (int argc, char *argv[])
     			std::string _calledPartyNum = inapMsg.getCalledPartyNumber();
     			LOG("CPN: " << _calledPartyNum);
 
-
-
     			if(_calledPartyNum.empty() != true){
     				// SQL DATABASE
     				Database db;
@@ -143,8 +140,6 @@ int main (int argc, char *argv[])
     				db.open();
     				std::string newNum = db.find(_calledPartyNum);
 					db.close();
-
-
 
 					if(newNum.empty() != true){
 

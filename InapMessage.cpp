@@ -221,12 +221,12 @@ ByteStream InapMessage::encodeConnect (std::string addr)
 	// encode according to ITU-T recommendation Q.763 BCDKSI
 
 
-	OCTET_STRING_t  dtaStr = encodeDta(c);
+//	OCTET_STRING_t  dtaStr = encodeDta(c);
 
 //	oct->buf = c;
 //	oct->size = sizeof(c);
 
-//	OCTET_STRING_fromString(oct, dtaStr);
+	OCTET_STRING_fromString(oct, addr.c_str());
 //	ASN_SEQUENCE_ADD(dta, oct);
 
 //	OCTET_STRING_t * str = OCTET_STRING_new_fromBuf(&asn_DEF_OCTET_STRING, c, strlen(c));
@@ -235,12 +235,12 @@ ByteStream InapMessage::encodeConnect (std::string addr)
 
 //	asn_fprint(stdout, &asn_DEF_DestinationRoutingAddress, dta);
 
-	//asn_fprint(stdout, &asn_DEF_OCTET_STRING, &dtaStr);
+//  asn_fprint(stdout, &asn_DEF_OCTET_STRING, &dtaStr);
 
-//	ASN_SEQUENCE_ADD(&inapMsg->destinationRoutingAddress, dta);
+	ASN_SEQUENCE_ADD(&inapMsg->destinationRoutingAddress, oct);
 
 
-	ASN_SEQUENCE_ADD(&inapMsg->destinationRoutingAddress.list, &dtaStr);
+//	ASN_SEQUENCE_ADD(&inapMsg->destinationRoutingAddress.list, &dtaStr);
 //	&inapMsg->destinationRoutingAddress.list = c;
 
 	inapMsg->cutAndPaste = cap;
@@ -286,7 +286,7 @@ OCTET_STRING_t InapMessage::encodeDta(const char * str)
 
 		strHex[1] = str[i];
 
-		if(str[i+1] == ' ') {
+		if(str[i+1] == '\0') {
 			strHex[0] == 0;
 		}
 		else {

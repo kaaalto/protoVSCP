@@ -292,20 +292,25 @@ ByteStream TcapMessage::end(int _invokeId,
 //    tcMsg->choice.end.dialoguePortion = (OCTET_STRING_t*) anyAdapter;
 
 
-    // component return result last
+    // component invoke
     Component_t* component;
     component = (Component_t*) calloc(1,sizeof(Component_t));
-    component->present = Component_PR_returnResultLast;
-    component->choice.returnResultLast.invokeID = _invokeId;
+    component->present = Component_PR_invoke;
+//    component->choice.returnResultLast.invokeID = _invokeId;
+//
+//    component->choice.returnResultLast.resultretres = (struct ReturnResult::resultretres*) calloc(1,sizeof(*component->choice.returnResultLast.resultretres));
+//    if(!component->choice.returnResultLast.resultretres) {
+//         throw ("calloc failure");
+//         return msg;
+//     }
+//    component->choice.returnResultLast.resultretres->opCode.present = OPERATION_PR_localValue;
+//    component->choice.returnResultLast.resultretres->opCode.choice.localValue = 0x20;
 
 
-    component->choice.returnResultLast.resultretres = (struct ReturnResult::resultretres*) calloc(1,sizeof(*component->choice.returnResultLast.resultretres));
-    if(!component->choice.returnResultLast.resultretres) {
-         throw ("calloc failure");
-         return msg;
-     }
-    component->choice.returnResultLast.resultretres->opCode.present = OPERATION_PR_localValue;
-    component->choice.returnResultLast.resultretres->opCode.choice.localValue = 0x20;
+
+    component->choice.invoke.invokeID = _invokeId;
+    component->choice.invoke.opCode.present = OPERATION_PR_localValue;
+    component->choice.invoke.opCode.choice.localValue = 0x20;
 
     ANY_t* parameter = (ANY_t*) calloc(1,sizeof(ANY_t));
     parameter->buf = (uint8_t*) calloc(1, _resultData.size());
@@ -314,7 +319,10 @@ ByteStream TcapMessage::end(int _invokeId,
         parameter->buf[i] = _resultData[i];
 
     parameter->size = _resultData.size();
-    component->choice.returnResultLast.resultretres->parameter = parameter;
+ //   component->choice.returnResultLast.resultretres->parameter = parameter;
+    component->choice.invoke.parameter = parameter;
+
+
 
     // component portion
     ComponentPortion_t* componentPort;
