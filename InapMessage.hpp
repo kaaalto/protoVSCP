@@ -33,7 +33,6 @@ private:
 	std::string strCpn;
 	void parseNum();
 	OCTET_STRING_t encodeDta(const char*);
-	long toHex(char*);
 
 	std::string rawNum;
 
@@ -44,7 +43,6 @@ public:
 	void decodeInitialDP(const ByteStream &);
 	string getCalledPartyNumber();
 	ByteStream encodeConnect(std::string);
-
 
 
 

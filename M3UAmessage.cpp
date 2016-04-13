@@ -595,7 +595,7 @@ ByteStream M3UAmessage::encodeMsg(const ByteStream &_sccpMsg, const ByteStream &
 	msg.push_back(0x00);
 	msg.push_back(0x00);
 	msg.push_back(0x00);
-	msg.push_back(0x02);		// TODO KYSY TÄSTÄ
+	msg.push_back(0x02);
 
 	// Protocol data tag
 

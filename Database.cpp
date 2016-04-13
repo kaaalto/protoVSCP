@@ -64,6 +64,7 @@ std::string Database::find(std::string fNum)
 		if((res == SQLITE_ROW))
 			{
 				transNum = std::string(reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1)));
+
 			}
 		else if(res == SQLITE_DONE)
 		{
@@ -72,7 +73,7 @@ std::string Database::find(std::string fNum)
 		}
 
 		}else{
-			LOG("SQL QUERY ERROR " << retval );		// TODO tälle jotain
+			LOG("SQL QUERY ERROR " << retval );
 			transNum = noNum;
 			LOG(sqlite3_errmsg(db));
 		}
@@ -80,6 +81,7 @@ std::string Database::find(std::string fNum)
 
 	sqlite3_finalize(stmt);
 
+	LOG("TRANSFERRED NUM " << transNum );
 	return transNum;
 }
 

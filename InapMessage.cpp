@@ -232,34 +232,18 @@ ByteStream InapMessage::encodeConnect (std::string addr)
 	oct = (CalledPartyNumber_t*) calloc(1, sizeof (CalledPartyNumber_t));
 	cap = (CutAndPaste_t*) calloc(1, sizeof(CutAndPaste_t));
 
-//	DestinationRoutingAddress_t *dta = (DestinationRoutingAddress_t*) calloc(1, sizeof(DestinationRoutingAddress_t));
-
-	const char * c = addr.c_str();
-
-	// encode according to ITU-T recommendation Q.763 BCDKSI
 
 
-//	OCTET_STRING_t  dtaStr = encodeDta(c);
 
-//	oct->buf = c;
-//	oct->size = sizeof(c);
+	// encode according to BCD according to ITU-T recommendation Q.763
+	// currently destinationRoutingAddress does not encode correctly
+
 
 	OCTET_STRING_fromString(oct, addr.c_str());
-//	ASN_SEQUENCE_ADD(dta, oct);
 
-//	OCTET_STRING_t * str = OCTET_STRING_new_fromBuf(&asn_DEF_OCTET_STRING, c, strlen(c));
-//	asn_fprint(stdout, &asn_DEF_OCTET_STRING, str);
-//	LOG("dta size " << sizeof(dta) << " " << dta);
-
-//	asn_fprint(stdout, &asn_DEF_DestinationRoutingAddress, dta);
-
-//  asn_fprint(stdout, &asn_DEF_OCTET_STRING, &dtaStr);
 
 	ASN_SEQUENCE_ADD(&inapMsg->destinationRoutingAddress, oct);
 
-
-//	ASN_SEQUENCE_ADD(&inapMsg->destinationRoutingAddress.list, &dtaStr);
-//	&inapMsg->destinationRoutingAddress.list = c;
 
 	inapMsg->cutAndPaste = cap;
 
@@ -279,71 +263,10 @@ ByteStream InapMessage::encodeConnect (std::string addr)
 
 }
 
-	// ITU-T Q.763
+	// TODO ITU-T Q.763
 OCTET_STRING_t InapMessage::encodeDta(const char * str)
 {
-	OCTET_STRING_t ret;
-	bool isOdd;
-	int size = 2;
-
-	if (sizeof(str) % 2 == 0) isOdd = true;
-
-	if( isOdd ){ ret.buf[0] = 0x02;}
-	else {ret.buf[0] = 0x82;}
-	ret.buf[1] = 0x10;
-
-
-	int x = 1;
-
-
-	for(unsigned int i = 0; i < sizeof(str) +1; i = i+2)
-	{
-		char *strHex = (char*)malloc(2) ;
-		x++;
-		size = size + 2;
-
-		strHex[1] = str[i];
-
-		if(str[i+1] == '\0') {
-			strHex[0] == 0;
-		}
-		else {
-
-		strHex[0] = str[i+1];
-		}
-
-		LOG("strHex" << strHex);
-		ret.buf[x] = toHex(strHex);
-
-	//	if(i % 2 == 0){
-	//		ret.buf[i+2] = toHex(str[i+1]);
-	//	}
-	//	else {ret.buf[i+2] = toHex(str[i]);};
-	}
-
-
-	ret.size = size;
-	LOG("RET:");
-	asn_fprint(stdout, &asn_DEF_OCTET_STRING, &ret);
-	LOG("RET SIZE: " << ret.size)
-
-	return ret;
 
 }
-long InapMessage::toHex(char *s)
-{
-	LOG("char: " << s);
-	long h;
 
-////	std::string copy = std::string("0x") + (std::string)s;
-//	const char *copyS = s;
-//	h = (uint8_t)atoi(copyS);
-
-	h = strtol (s,NULL,16);
-
-	LOG("h: " << h);
-
-	return h;
-
-}
 // TODO InapMessage::encodeRelease(...)
